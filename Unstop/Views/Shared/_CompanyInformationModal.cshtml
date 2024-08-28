@@ -1,0 +1,49 @@
+﻿@model Unstop.Models.DTO.CompanyDTO;
+
+<div class="modal fade" id="companyInformationModal" tabindex="-1" aria-labelledby="filterModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered p-5">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="filterModalLabel">Company Details</h1>
+                <button type="button" class="btn-close shadow-none" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+            <div class="modal-body">
+                <div class="p-2 m-2" style="background-color: #BFDCF9">
+                    <div class="d-flex flex-column justify-content-center align-items-center p-3 my-2 gap-3">
+                        <img src="data:@Model.LogoContentType;base64,@Convert.ToBase64String(Model.Logo)" alt="company-logo" style="height: 100px;" />
+                        <div class="d-flex justify-content-center align-items-center gap-3">
+                            <a href="@Model.WebsiteUrl"><h3>@Model.CompanyName <i class="fa-solid fa-up-right-from-square"></i></h3></a>
+                            <sub>since @Model.FoundedYear</sub>
+                        </div>
+                    </div>
+                    <div class="my-2 p-3">
+                        <div class="d-flex">
+                            <i class="fa-solid fa-industry me-2"></i>
+                            <h6>@Model.Industry</h6>
+                        </div>
+                        <div class="d-flex">
+                            <i class="fa-solid fa-users-viewfinder me-2"></i>
+                            <h6>@Model.CompanySize</h6>
+                        </div>
+                        <div class="d-flex">
+                            <i class="fa-solid fa-phone me-2"></i>
+                            <h6>@Model.PhoneNumber</h6>
+                        </div>
+                        <div class="d-flex">
+                            <i class="fa-solid fa-city me-2"></i>
+                            <h6>@Model.City</h6>
+                        </div>
+                        @if (Model.Address != null)
+                        {
+                            <div class="d-flex">
+                                <i class="fa-solid fa-location-dot me-2"></i>
+                                <h6>@Model.Address</h6>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,79 @@
+﻿@using Newtonsoft.Json;
+@inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpAcc
+@model Unstop.Models.VM.ApplicantsVM;
+
+@{
+    ViewData["Title"] = "Applicants";
+}
+
+<partial name="_Header" />
+
+<div class="container mb-5">
+    <div class="row p-5" style="background-color: #BFDCF9">
+
+        <div class="col-12 ms-sm-4 m-0">
+            <a asp-action="Jobs" asp-controller="Company" class="btn border border-1 border-primary rounded-pill shadow-none"><i class="fa-solid fa-chevron-left"></i></a>
+        </div>
+
+        <div class="col-lg-7 col-12 ps-4 ms-md-5 my-5" style="border-left: 5px solid #0d6efd;">
+            <div class="p-2 rounded-2 bg-white d-flex justify-content-center" style="height: 100px; width: 100px;">
+                <img class="d-block w-100" src="https://d8it4huxumps7.cloudfront.net/uploads/images/unstop/svg/unstop-logo.svg" alt="job-photo" />
+            </div>
+            <div>
+                <h1 class="my-3">
+                    <a asp-action="JobInformation" asp-controller="Company" asp-route-jobId="@Model.Job.JobId" target="_blank">
+                        @Model.Job.Title <sup><i class="fa-solid fa-up-right-from-square fs-5"></i></sup>
+                    </a>
+                </h1>
+                <p><i class="fa-solid fa-building"></i> @Model.Job.Company</p>
+                <p><i class="fa-solid fa-location-dot"></i> @Model.Job.Location</p>
+            </div>
+        </div>
+
+        <div class="col-lg-4 col-12 m-auto">
+            <div class="p-4 rounded-2 bg-white">
+
+                <div class="row mt-3">
+                    <div class="col-2 d-flex justify-content-center align-items-center">
+                        <i class="fa-solid fa-user-group fs-5"></i>
+                    </div>
+                    <div class="col-auto">
+                        <small>No. of Registrations</small>
+                        <h6>@Model.Applicants.Count()</h6>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+
+    <div class="d-flex justify-content-center align-items-center gap-3 mt-3">
+        <label>Page Size</label>
+        <div class="d-inline-block">
+            <select class="form-select shadow-none" aria-label="Default select example" onchange='seachApplicants("@ViewBag.Search", @Model.Job.JobId, "@ViewBag.SortOrder", @Html.Raw(JsonConvert.SerializeObject(ViewBag.Status ?? new List<string>())), false, this.value)'>
+                <option value="2">2</option>
+                <option value="5">5</option>
+                <option value="10">10</option>
+            </select>
+        </div>
+    </div>
+
+    <div id="applicantsContainer">
+        <partial name="_ApplicantsList" />
+    </div>
+
+    <div id="applicantsModalContainer"></div>
+    <div id="offerLetterContainer"></div>
+</div>
+
+<partial name="_Footer" />
+
+@section Scripts{
+    <script>
+        const navLinks = document.querySelectorAll('.nav-link');
+        const currentNav = document.getElementById('nav-jobs');
+        navLinks.forEach(nav => nav.classList.remove('active'));
+        currentNav.classList.add('active');
+    </script>
+}

@@ -1,0 +1,51 @@
+﻿@model Unstop.Models.DTO.ForgotPasswordModel;
+
+@{
+    ViewData["Title"] = "Forgot Page";
+}
+
+<div class="container-fluid login-page">
+    <div class="position-absolute z-n1 login-page-right-bg">
+        <img src="https://d8it4huxumps7.cloudfront.net/uploads/images/login/right-vector.png?d=1194x852" alt="login-right" class="" />
+    </div>
+
+    <div class="d-flex justify-content-center align-items-center login-page-form">
+        <div class="container border border-1 rounded-2 shadow-lg bg-white px-lg-3 px-1 py-5 d-flex justify-content-around">
+            <div id="carouselExampleIndicators" class="carousel slide login-page-form-left p-lg-5 p-md-3 p-1" data-bs-ride="carousel">
+                <div class="carousel-inner">
+                    <div class="carousel-item active">
+                        <img src="https://d8it4huxumps7.cloudfront.net/uploads/images/login/login-img-1.png?d=734x734" alt="login-middle">
+                    </div>
+                    <div class="carousel-item">
+                        <img src="https://d8it4huxumps7.cloudfront.net/uploads/images/login/login-img-6.png?d=734x734" alt="login-middle">
+                    </div>
+                </div>
+            </div>
+
+            <div class="login-page-form-right d-flex flex-column justify-content-around align-items-center w-100 p-lg-5 m-lg-5 p-md-3 m-md-3 p-1 m-1">
+                <div class="d-flex flex-column justify-content-start w-100">
+                    <h3>Forgot Password?</h3>
+                    <h6 class="text-muted">Create a new password to login your account.</h6>
+                </div>
+
+                <form method="post" class="w-100">
+                    <div class="form-floating mb-3 position-relative">
+                        <input type="email" asp-for="@Model.Email" class="form-control bg-transparent border border-1 border-primary rounded-2 shadow-none" id="floatingEmail" placeholder="Email Id">
+                        <label for="floatingEmail">Email</label>
+                        <span asp-validation-for="Email" class="text-danger"></span>
+                    </div>
+                    <button class="btn btn-primary rounded-pill shadow-none w-100 mb-3" type="submit"><b>Send Email</b></button>
+                    <a asp-action="Login" asp-controller="Home" class="btn border border-1 rounded-pill shadow-none w-100 text-primary fw-bold"><i class="fa-solid fa-chevron-left me-2"></i>Back to login</a>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="position-absolute z-n1 login-page-left-bg">
+        <img src="https://d8it4huxumps7.cloudfront.net/uploads/images/login/left-vector.png?d=1190x874" alt="login-left" class="" />
+    </div>
+</div>
+
+@section Scripts{
+    <partial name="_ValidationScriptsPartial" />
+}

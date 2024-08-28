@@ -1,0 +1,138 @@
+﻿@model Unstop.Models.DTO.JobDTO
+
+@{
+    ViewData["Title"] = "Post Job";
+}
+
+<partial name="_Header" />
+
+<div class="container pb-5 mb-5">
+    <div class="d-flex justify-content-between">
+        <div class="d-flex justify-content-center align-items-center">
+            <a asp-action="Dashboard" asp-controller="Company" class="btn border border-1 border-primary rounded-pill shadow-none"><i class="fa-solid fa-chevron-left"></i></a>
+        </div>
+        <div>
+            <h4 class="my-5">New Job Details</h4>
+        </div>
+        <div></div>
+    </div>
+
+    <form class="w-100 mb-5" method="post">
+        <input type="hidden" asp-for="UserId" />
+        <input type="hidden" asp-for="Company" />
+
+        <div class="mb-3">
+            <label for="inputCompany" class="form-label fw-bold">Company <sup class="text-danger">*</sup></label>
+            <input asp-for="@Model.Company" disabled type="text" class="form-control shadow-none border border-1  rounded-2" id="inputCompany">
+        </div>
+        <div class="mb-3">
+            <label for="inputTitle" class="form-label fw-bold">Job Title <sup class="text-danger">*</sup></label>
+            <input asp-for="Title" type="text" class="form-control shadow-none border border-1  rounded-2" id="inputTitle">
+            <span asp-validation-for="Title" class="text-danger"></span>
+        </div>
+        <div class="mb-3">
+            <label for="inputDescription" class="form-label fw-bold">Job Description</label>
+            <input asp-for="Description" type="text" class="form-control shadow-none border border-1  rounded-2" id="inputDescription">
+        </div>
+        <div class="mb-3">
+            <label for="inputRequirements" class="form-label fw-bold">Job Requirements</label>
+            <textarea asp-for="Requirements" rows="5" type="text" class="form-control h-100 shadow-none border border-1  rounded-2" id="inputRequirements" aria-describedby="requirementsHelp"></textarea>
+            <div id="requirementsHelp" class="form-text">Use &lt; new &gt; tag at the end for new requirement</div>
+        </div>
+        <div class="row mb-3">
+            <div class="col-md-6 mb-3">
+                <label for="inputJobType" class="form-label fw-bold">Job Type</label>
+                <select asp-for="JobType" class="form-select shadow-none border border-1  rounded-2" id="inputJobType">
+                    <option selected disabled value="">Select Any Job Type</option>
+                    <option value="Work From Office">Work From Office</option>
+                    <option value="Hybrid">Hybrid</option>
+                    <option value="Work From Home">Work From Home</option>
+                </select>
+                <span asp-validation-for="JobType" class="text-danger"></span>
+            </div>
+            <div class="col-md-6 mb-3">
+                <label for="inputJobTiming" class="form-label fw-bold">Job Timing</label>
+                <select asp-for="JobTiming" class="form-select shadow-none border border-1  rounded-2" id="inputJobTiming">
+                    <option selected disabled value="">Select Any Job Timing</option>
+                    <option value="Full Time">Full Time</option>
+                    <option value="Part Time">Part Time</option>
+                </select>
+                <span asp-validation-for="JobTiming" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="mb-3">
+            <label for="inputResponsibilities" class="form-label fw-bold">Job Responsibilities</label>
+            <textarea asp-for="Responsibilities" rows="5" type="text" class="form-control h-100 shadow-none border border-1  rounded-2" id="inputResponsibilities" aria-describedby="responsibilitiesHelp"></textarea>
+            <div id="responsibilitiesHelp" class="form-text">Use &lt; new &gt; tag at the end for new responsibilities</div>
+        </div>
+        <div class="mb-3">
+            <label for="inputLocation" class="form-label fw-bold">Job Locations</label>
+            <input asp-for="Location" type="text" class="form-control shadow-none border border-1  rounded-2" id="inputLocation" aria-describedby="locationsHelp">
+            <div id="locationsHelp" class="form-text">Use , at the end for multiple locations</div>
+        </div>
+        <div class="row mb-3">
+            <div class="col-md-6 mb-md-0 mb-3">
+                <label for="inputMinSalary" class="form-label fw-bold">Minimum Salary</label>
+                <input asp-for="MinSalary" type="number" class="form-control shadow-none border border-1  rounded-2" id="inputMinSalary" aria-describedby="salaryHelp">
+                <span asp-validation-for="MinSalary" class="text-danger"></span>
+            </div>
+            <div class="col-md-6 mb-md-0 mb-3">
+                <label for="inputMaxSalary" class="form-label fw-bold">Maximum Salary</label>
+                <input asp-for="MaxSalary" type="number" class="form-control shadow-none border border-1  rounded-2" id="inputMaxSalary" aria-describedby="salaryHelp">
+                <span asp-validation-for="MaxSalary" class="text-danger"></span>
+            </div>  
+            <div id="salaryHelp" class="form-text">Salary should be on yearly basis</div>
+        </div>
+        <div class="row mb-3">
+            <div class="col-md-6 mb-3">
+                <label for="inputMinExperience" class="form-label fw-bold">Minimum Experience</label>
+                <input asp-for="MinExperience" type="number" class="form-control shadow-none border border-1  rounded-2" id="inputMinExperience" aria-describedby="experienceHelp">
+                <span asp-validation-for="MinExperience" class="text-danger"></span>
+            </div>
+            <div class="col-md-6 mb-3">
+                <label for="inputMaxExperience" class="form-label fw-bold">Maximum Experience</label>
+                <input asp-for="MaxExperience" type="number" class="form-control shadow-none border border-1  rounded-2" id="inputMaxExperience" aria-describedby="experienceHelp">
+                <span asp-validation-for="MaxExperience" class="text-danger"></span>    
+            </div>
+            <div id="experienceHelp" class="form-text">Experience should be on yearly basis</div>
+        </div>
+        <div class="row mb-3">
+            <div class="col-md-6 mb-3">
+                <label for="inputWorkingDays" class="form-label fw-bold">Working Days</label>
+                <select asp-for="WorkingDays" class="form-select shadow-none border border-1  rounded-2" id="inputWorkingDays">
+                    <option selected value="4">4</option>
+                    <option value="5">5</option>
+                    <option value="6">6</option>
+                </select>
+                <span asp-validation-for="WorkingDays" class="text-danger"></span>
+            </div>
+            <div class="col-md-6 mb-3">
+                <label for="inputLastDate" class="form-label fw-bold">Application Due Date <sup class="text-danger">*</sup></label>
+                <input asp-for="LastDate" type="date" class="form-control shadow-none border border-1  rounded-2" id="inputLastDate" min="@DateTime.Now.Date.AddDays(2).ToString("yyyy-MM-dd")">
+                <span asp-validation-for="LastDate" class="text-danger"></span>
+            </div>
+            <div class="col-md-6 mb-3">
+                <label for="inputOccupancy" class="form-label fw-bold">Occupancy <sup class="text-danger">*</sup></label>
+                <input asp-for="Occupancy" type="number" class="form-control shadow-none border border-1  rounded-2" id="inputOccupancy">
+                <span asp-validation-for="Occupancy" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="mb-3 d-flex justify-content-end">
+            <button type="reset" onclick="resetValidation()" class="btn btn-outline-primary px-5 fw-bold me-1 shadow-none">Cancel</button>
+            <button type="submit" class="btn btn-primary px-5 fw-bold ms-1 shadow-none">Post Job</button>
+        </div>
+    </form>
+</div>
+
+<partial name="_Footer" />
+
+@section Scripts{
+    <partial name="_ValidationScriptsPartial" />
+
+    <script>
+        const navLinks = document.querySelectorAll('.nav-link');
+        const currentNav = document.getElementById('nav-home');
+        navLinks.forEach(nav => nav.classList.remove('active'));
+        currentNav.classList.add('active');
+    </script>
+}

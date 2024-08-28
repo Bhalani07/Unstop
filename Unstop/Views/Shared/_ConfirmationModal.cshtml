@@ -1,0 +1,15 @@
+﻿@model Unstop.Models.DTO.JobDTO;
+
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered p-5">
+        <div class="modal-content p-5">
+            <div class="modal-body">
+                Are you sure want to delete this job?
+            </div>
+            <div class="d-flex justify-content-center gap-3">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <a class="btn btn-primary" asp-action="DeleteJob" asp-controller="Company" asp-route-jobId="@Model.JobId">Confirm</a>
+            </div>
+        </div>
+    </div>
+</div>

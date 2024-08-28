@@ -1,0 +1,36 @@
+﻿@using Newtonsoft.Json;
+@model Unstop.Models.VM.ApplicationsVM;
+
+@{
+    ViewData["Title"] = "Applications";
+}
+
+<partial name="_CandidateHeader" />
+
+<div class="d-flex justify-content-center align-items-center gap-3">
+    <label>Page Size</label>
+    <div class="d-inline-block">
+        <select class="form-select shadow-none" aria-label="Default select example" onchange='seachApplication("@ViewBag.Search", "@ViewBag.SortOrder", @Html.Raw(JsonConvert.SerializeObject(ViewBag.Status ?? new List<string>())), false, this.value )'>
+            <option value="2">2</option>
+            <option value="5">5</option>
+            <option value="10">10</option>
+        </select>
+    </div>
+</div>
+
+<div id="candidateApplicationsContainer">
+    <partial name="_ApplicationsList" />
+</div>
+
+<partial name="_Footer" />
+
+<div id="candidateModalContainer"></div>
+
+@section Scripts{
+    <script>
+        const navLinks = document.querySelectorAll('.nav-link');
+        const currentNav = document.getElementById('nav-application');
+        navLinks.forEach(nav => nav.classList.remove('active'));
+        currentNav.classList.add('active');
+    </script>
+}

@@ -1,0 +1,59 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net7.0</TargetFramework>
+    <RootNamespace>Unstop_Utility</RootNamespace>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="BoldReports.Net.Core" Version="6.1.45" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="7.0.20" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="7.0.20">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="7.0.18" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="Pervasive.Data.SqlClient">
+      <HintPath>C:\Users\pci233\Downloads\Pervasive.Data.SqlClient.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="Applications.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Applications.xsd</DependentUpon>
+    </Compile>
+    <Compile Update="Jobs.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Jobs.xsd</DependentUpon>
+    </Compile>
+    <Compile Update="Offer.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Offer.xsd</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="Applications.xsd">
+      <Generator>MSDataSetGenerator</Generator>
+      <LastGenOutput>Applications.Designer.cs</LastGenOutput>
+    </None>
+    <None Update="Jobs.xsd">
+      <Generator>MSDataSetGenerator</Generator>
+      <LastGenOutput>Jobs.Designer.cs</LastGenOutput>
+    </None>
+    <None Update="Offer.xsd">
+      <Generator>MSDataSetGenerator</Generator>
+      <LastGenOutput>Offer.Designer.cs</LastGenOutput>
+    </None>
+  </ItemGroup>
+
+</Project>

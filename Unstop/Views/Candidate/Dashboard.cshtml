@@ -1,0 +1,40 @@
+﻿@{
+    ViewData["Title"] = "Dashboard";
+}
+
+<partial name="_CandidateHeader" />
+
+<div class="container">
+    <div class="d-flex justify-content-center align-items-center">
+        <div class="d-flex justify-content-center mt-5" style="height: 80vh;">
+            <div class="d-flex flex-column justify-content-center align-items-start ms-sm-2 ms-0 ms-sm-0 w-50">
+                <h1><span class="text-primary">Unlock</span> Ambition</h1>
+                <p class="text-secondary">
+                    Apply to a plethora of hiring opportunities & work with your dream companies!
+                </p>
+                <div class="d-flex gap-3 w-100">
+                    <a class="btn btn-primary rounded-pill shadow-none mt-3 w-50 d-flex justify-content-center align-items-center" asp-action="Jobs" asp-controller="Candidate">
+                        <b>Find Jobs</b>
+                    </a>
+                    <a class="btn btn-outline-primary rounded-pill shadow-none mt-3 w-50 d-flex justify-content-center align-items-center" asp-action="Jobs" asp-controller="Candidate" asp-route-isPreferredJobs=true>
+                        <b>Preferred Jobs</b>
+                    </a>
+                </div>
+            </div>
+            <div class="d-md-flex justify-content-end align-items-center d-none w-50">
+                <img src="https://d8it4huxumps7.cloudfront.net/uploads/images/66570d9598564_jobs_internships_hiring_challenges.png?d=1200x1200" alt="dashboard-img" class="h-75 ms-lg-4 ms-2 ps-lg-5 ps-2 img-fluid" />
+            </div>
+        </div>
+    </div>
+</div>
+
+<partial name="_Footer" />
+
+@section Scripts{
+    <script>
+        const navLinks = document.querySelectorAll('.nav-link');
+        const currentNav = document.getElementById('nav-home');
+        navLinks.forEach(nav => nav.classList.remove('active'));
+        currentNav.classList.add('active');
+    </script>
+}

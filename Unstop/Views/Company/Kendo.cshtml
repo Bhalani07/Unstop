@@ -1,0 +1,424 @@
+﻿@using Kendo.Mvc.UI;
+
+@{
+    ViewData["Title"] = "Kendo";
+}
+
+<script src="https://unpkg.com/pako/dist/pako_deflate.min.js"></script>
+<script src="https://unpkg.com/jszip/dist/jszip.min.js"></script>
+
+<style>
+    .k-pdf-export .k-grid-toolbar,
+    .k-pdf-export .k-pager,
+    .k-pdf-export .k-clone,
+    .k-pdf-export .k-loader-container {
+        display: none;
+    }
+
+    .k-filter-menu-container > .k-searchbox,
+    .k-item > .k-label {
+        align-items: center;
+    }
+
+    .k-fab-text {
+        display: none;
+    }
+
+    .closeTab {
+        margin-left: 15px;
+        font-weight: bold;
+    }
+
+    .k-pager-info .k-label {
+        display: block;
+    }
+
+    .k-tabstrip-top > .k-tabstrip-items-wrapper .k-item:active, .k-tabstrip-top > .k-tabstrip-items-wrapper .k-item.k-active {
+        background-color: blue !important;
+        color: white !important;
+    }
+
+    .demo-section .tabstrip-container {
+        width: 1000px;
+    }
+</style>
+
+<partial name="_Header" />
+
+@* Kendo Tabstrip *@
+<div class="m-5 p-5 demo-section d-flex flex-column justify-content-center align-items-center">
+    <div class="d-flex justify-content-center gap-2 mb-3">
+        @* <input type="text" id="newTabTitle" class="form-control shadow-none w-25 border border-2" /> *@
+        @* <button class="add-tab btn rounded-circle btn-primary shadow-none fw-bold">+</button> *@
+        <button class="add-tab btn btn-primary shadow-none fw-bold">Add New Tab</button>
+    </div>
+    <div class="tabstrip-container">
+        @(Html.Kendo().TabStrip()
+            .Name("tabstrip")
+            .SelectedIndex(0)
+            .Sortable(true)
+            .Items(tabstrip =>
+            {
+                tabstrip.Add().Text("Tab 1 <i class='fa-solid fa-xmark closeTab'></i>")
+                .Encoded(false)
+                .LoadContentFrom(Url.Action("GetTabContent", "Company", new { newTabIndex = 1 }));
+
+                tabstrip.Add().Text("Tab 2 <i class='fa-solid fa-xmark closeTab'></i>")
+                .Encoded(false)
+                .LoadContentFrom(Url.Action("GetTabContent", "Company", new { newTabIndex = 2 }));
+
+                tabstrip.Add().Text("Tab 3 <i class='fa-solid fa-xmark closeTab'></i>")
+                .Encoded(false)
+                .LoadContentFrom(Url.Action("GetTabContent", "Company", new { newTabIndex = 3 }));
+            })
+            //.Animation(animation => animation.Open(effect => effect.Fade(FadeDirection.In)))
+            //.Events(events => events.Activate("onTabActivate"))
+        )
+
+        @* <div id="tabs">
+        <ul>
+        <li><a href="#tab-1"><span>One</span></a></li>
+        <li><a href="#tab-2"><span>Two</span></a></li>
+        <li><a href="#tab-3"><span>Three</span></a></li>
+        </ul>
+        <div id="tab-1"></div>
+        <div id="tab-2"></div>
+        <div id="tab-3"></div>
+        </div> *@
+    </div>
+</div>
+
+@* Kendo Grid *@
+<div class="m-5 p-5">
+    <div class="mb-2 d-flex justify-content-center gap-3">
+        <a href="#" class="k-button k-button-md k-rounded-md k-button-solid-base" id="save">Save State</a>
+        <a href="#" class="k-button k-button-md k-rounded-md k-button-solid-base" id="load">Load State</a>
+    </div>
+
+    @(
+        Html.Kendo().Grid<Unstop.Models.DTO.JobDTO>()
+        .Name("jobsGrid")
+        .ContextMenu()
+        .Columns(columns =>
+        {
+            //columns.Select().Width(50).Locked(true).Lockable(false).Exportable(false).HtmlAttributes(new { style = "text-align: center" });
+            //columns.Bound(x => x.JobId).Filterable(false).Width(100).Locked(true).Lockable(false);
+            columns.Bound(x => x.Title).Width(400).Filterable(ftb => ftb.UI("titleFilter"));
+            columns.Group(group => group
+                .Title("Job Details")
+                .Columns(details =>
+                {
+                    details.Bound(x => x.JobType).Width(200).Filterable(ftb => ftb.Multi(true).Search(true).CheckAll(false).BindTo(new[]
+                    {
+                        new { JobType = "Work From Home"},
+                        new { JobType = "Hybrid"},
+                        new { JobType = "Work From Office"}
+                    })).EditorTemplateName("JobTypeEditor");
+                    details.Bound(x => x.JobTiming).Width(200).Filterable(ftb => ftb.Multi(true).Search(true).CheckAll(false).BindTo(new[]
+                    {
+                        new { JobTiming = "Full Time"},
+                        new { JobTiming = "Part Time"}
+                    })).EditorTemplateName("JobTimingEditor");
+                    details.Bound(x => x.Occupancy).Width(200);
+                    details.Bound(x => x.WorkingDays).Width(200);
+                    details.Bound(x => x.LastDate).Width(200).Format("{0:dd MMM, yyyy}");
+                    details.Bound(x => x.Location).Width(200);
+                })
+            );
+            columns.Command(command => { command.Destroy(); command.Custom("ViewDetails").Click("showDetails"); }).Width(300).Title("Actions").Lockable(false).Exportable(false);
+        })
+        //.HtmlAttributes(new { style = "height: 300px;" })
+        //.Size(ComponentSize.Medium)
+        .ToolBar(tools => { tools.Excel(); tools.Pdf(); tools.Save(); tools.Search(); })
+        .Editable(editable => editable.Mode(GridEditMode.InCell))
+        .Pageable(pager => pager
+            .Info(true)
+            .Input(true)
+            .Refresh(true)
+            .Numeric(true)
+            .ButtonCount(5)
+            .Responsive(true)
+            .PreviousNext(true)
+            .AlwaysVisible(true)
+            .PageSizes(new int[]{ 2, 5, 10, 20 })
+        )
+        .Sortable(sortable => sortable
+            .AllowUnsort(true)
+            .ShowIndexes(true)
+            .SortMode(GridSortMode.Mixed)
+            .InitialDirection("desc")
+        )
+        .Search(search => {
+            search.Field(x => x.Title, "contains");
+            search.Field(x => x.Location, "contains");
+        })
+        .Scrollable()
+        .Filterable(filter => filter.Extra(false))
+        .Groupable()
+        .Selectable(selectable => selectable
+            .Mode(GridSelectionMode.Multiple)
+            .Type(GridSelectionType.Row)
+        )
+        .PersistSelection()
+        .Excel(excel => excel
+            .AllPages()
+            .Filterable(true)
+            .FileName("Jobs.xlsx")
+            //.ProxyURL(Url.Action("Excel_Export", "Company"))
+        )
+        .Pdf(pdf => pdf
+            .AllPages()
+            .PaperSize("A4")
+            .Scale(0.8)
+            .Margin("2cm", "1cm", "1cm", "1cm")
+            .Landscape()
+            .RepeatHeaders()
+            .FileName("Jobs.pdf")
+            //.ProxyURL(Url.Action("Pdf_Export", "Company"))
+        )
+        .Reorderable(x => x.Columns(true).Rows(true))
+        .Resizable(x => x.Columns(true).Rows(true))
+        //.ColumnMenu(menu =>
+        //{
+            //menu.ComponentType("tabbed");
+            //menu.ClearAllFilters(true);
+            //menu.Columns(column =>
+            //{
+                //column
+                //.Sort("asc");
+                //.Groups(groups =>
+                //{
+                    //groups.Add().Title("Title").Columns(new List<string> { "Title" });
+                    //groups.Add().Title("Address").Columns(new List<string> { "JobType", "Location", "LastDate" });
+                //});
+            //});
+        //})
+        .DataSource(dataSource => dataSource
+            .Ajax()
+            .Batch(true)
+            .PageSize(5)
+            .GroupPaging(true)
+            //.Group(x => x.Add(y => y.UnitsInStock))
+            //.Aggregates(aggregates =>
+            //{
+                //aggregates.Add(x => x.UnitsInStock).Min().Max().Count();
+                //aggregates.Add(x => x.UnitPrice).Sum();
+                //aggregates.Add(x => x.ProductName).Count();
+            //})
+            .ServerOperation(true)
+            .Model(model =>
+            {
+                model.Id(x => x.JobId);
+
+            })
+            .Create(create => create.Action("CreateProducts", "Company"))
+            .Read(read => read.Action("GetProducts", "Company"))
+            .Update(update => update.Action("UpdateProducts", "Company"))
+            .Destroy(delete => delete.Action("DeleteProducts", "Company"))
+        )
+    )
+
+    @(
+        Html.Kendo().FloatingActionButton()
+        .Name("fab")
+        .ThemeColor(FloatingActionButtonThemeColor.Primary)
+        .Size(FloatingActionButtonSize.Medium)
+        .PositionMode(FloatingActionButtonPositionMode.Absolute)
+        .Icon("plus")
+        .AlignOffset(alignOffset => alignOffset.Horizontal(160).Vertical(180))
+        .Events(events => events.Click("addItem"))
+    )
+
+    @(
+        Html.Kendo().Window().Name("Details")
+        .Title("Job Details")
+        .Visible(false)
+        .Modal(true)
+        .Draggable(true)
+        .Width(500)
+        .HtmlAttributes(new { @class = "k-text-center" })
+    )
+</div>
+
+<partial name="_Footer" />
+
+@section Scripts{
+    @* <script>
+        $(document).ready(function () {
+            $("#tabs").tabs({
+                activate: function (event, ui) {
+                    var tabId = ui.newPanel.attr('id');
+                    loadTabContent(tabId);
+                }
+            });
+
+            function loadTabContent(tabId) {
+                debugger;
+                var tabContentUrl = '';
+                switch (tabId) {
+                    case 'tab-1':
+                        tabContentUrl = '@Url.Action("Content1", "Company")'; // Change to your action method and controller
+                        break;
+                    case 'tab-2':
+                        tabContentUrl = '@Url.Action("Content2", "Company")'; // Change to your action method and controller
+                        break;
+                    case 'tab-3':
+                        tabContentUrl = '@Url.Action("Content3", "Company")'; // Change to your action method and controller
+                        break;
+                }
+
+                if (tabContentUrl) {
+                    $("#" + tabId).load(tabContentUrl);
+                }
+            }
+        });
+    </script> *@
+
+    <script type="text/html" id="template">
+        <div id="details-container">
+            <h2>#= Company #</h2>
+            <h4>#= Title #</h4>
+            <em>#= LastDate #</em>
+            <dl>
+                <dt>Job Type: #= JobType #</dt>
+                <dt>Location: #= Location #</dt>
+            </dl>
+        </div>
+    </script>
+
+    <script type="text/javascript">
+        const navLinks = document.querySelectorAll('.nav-link');
+        const currentNav = document.getElementById('nav-kendo');
+        navLinks.forEach(nav => nav.classList.remove('active'));
+        currentNav.classList.add('active');
+
+        // View Details
+        function showDetails(e) {
+            e.preventDefault();
+
+            var detailsTemplate = kendo.template($("#template").html());
+            var dataItem = this.dataItem($(e.currentTarget).closest("tr"));
+            var wnd = $("#Details").data("kendoWindow");
+
+            wnd.content(detailsTemplate(dataItem));
+            wnd.center().open();
+        }
+
+
+        // Autocomplete
+        function titleFilter(e) {
+            e.kendoAutoComplete({
+                dataSource: {
+                    transport: {
+                        read: "@Url.Action("FilterMenuCustomization_Titles", "Company")"
+                    }
+                }
+            });
+        }
+
+
+        // Create Job
+        function addItem(){
+            var jobList = $('#jobsGrid').getKendoGrid();
+            console.log(jobList);
+            jobList.addRow();
+        }
+
+
+        // Lazy load tab content
+        // var lastActivatedTabContent = null;
+
+        // function onTabActivate(e) {
+        //     var tabStrip = $("#tabstrip").data("kendoTabStrip");
+        //     var selectedTab = tabStrip.select();
+        //     var contentElement = tabStrip.contentElement(selectedTab.index());
+
+        //     if (lastActivatedTabContent) {
+        //         $(lastActivatedTabContent).empty();
+        //     }
+
+        //     if ($(contentElement).is(":empty")) {
+        //         var url = selectedTab.find('a').data('loadContentFrom');
+        //         $(contentElement).load(url);
+        //     }
+
+        //     lastActivatedTabContent = contentElement;
+        // }
+
+
+        $(document).ready(function () {
+            var tabstrip = $("#tabstrip").data("kendoTabStrip");
+
+            // Add Tab
+            $(".add-tab").on("click", function () {
+                var newTabIndex = tabstrip.items().length + 1
+
+                $.ajax({
+                    url: '@Url.Action("GetTabContent", "Company")',
+                    data: { newTabIndex },
+                    dataType: "html",
+
+                    success: function (result) {
+                        //setTimeout(function () {
+                            tabstrip.append({
+                                text: "Tab " + newTabIndex + "<i class='fa-solid fa-xmark closeTab'></i>",
+                                encoded: false,
+                                content: result
+                            });
+
+                            tabstrip.select(tabstrip.items().length - 1);
+                        //}, 60000);
+                    },
+                    error: function () {
+                        console.error("Error");
+                    }
+                });
+            });
+
+            // Close Tab
+            $("#tabstrip").on("click", ".closeTab", function () {
+                var item = $(this).closest(".k-item");
+                nextItem = item.next().length ? item.next() : item.prev();
+                tabstrip.remove(item);
+                tabstrip.select(nextItem);
+            });
+
+
+
+            // Floating Button
+            var fab = $("#fab").getKendoFloatingActionButton();
+
+            $("#fab").hover(function () {
+                fab.text("Add New Job");
+                fab.element.find(".k-fab-text")
+                    .stop().toggle(200);
+            }, function () {
+                fab.element.find(".k-fab-text")
+                    .stop()
+                    .toggle(200)
+                    .promise().done(function () {
+                        fab.text("");
+                    });
+            });
+
+
+
+            // State Peresistance
+            var grid = $("#jobsGrid").data("kendoGrid");
+
+            $("#save").click(function (e) {
+                e.preventDefault();
+                localStorage["kendo-grid-options"] = kendo.stringify(grid.getOptions());
+            });
+
+            $("#load").click(function (e) {
+                e.preventDefault();
+                var options = localStorage["kendo-grid-options"];
+                if (options) {
+                    grid.setOptions(JSON.parse(options));
+                }
+            });
+        });
+
+    </script>
+}

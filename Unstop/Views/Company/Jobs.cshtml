@@ -1,0 +1,35 @@
+﻿@model Unstop.Models.VM.JobsVM;
+
+@{
+    ViewData["Title"] = "Jobs";
+}
+
+<partial name="_Header" />
+
+<div class="d-flex justify-content-center align-items-center gap-3">
+    <label>Page Size</label>
+    <div class="d-inline-block">
+        <select class="form-select shadow-none" aria-label="Default select example" onchange="seachJob(`@ViewBag.Search`, 1, `@ViewBag.SortBy`, `@ViewBag.SortOrder`, `@ViewBag.JobType`, `@ViewBag.JobTime`, `@ViewBag.WorkingDays`, `@ViewBag.JobStatus`, false, `@ViewBag.PreferredJob`, this.value)">
+            <option value="2">2</option>
+            <option value="5">5</option>
+            <option value="10">10</option>
+        </select>
+    </div>
+</div>
+
+<div id="jobsContainer">
+    <partial name="_JobsList" />
+</div>
+
+<div id="modalContainer"></div>
+
+<partial name="_Footer" />
+
+@section Scripts{
+    <script>
+        const navLinks = document.querySelectorAll('.nav-link');
+        const currentNav = document.getElementById('nav-jobs');
+        navLinks.forEach(nav => nav.classList.remove('active'));
+        currentNav.classList.add('active');
+    </script>
+}

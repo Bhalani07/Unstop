@@ -1,0 +1,19 @@
+﻿@model Unstop.Models.DTO.ApplicationDTO;
+
+@{
+    ViewData["Title"] = "Job Offer";
+}
+
+<div class="container" style="height: 100vh;">
+    <div class="d-flex flex-column justify-content-center align-items-center" style="margin-top: 25%;">
+        <div class="d-flex flex-column justify-content-center align-items-center m-3">
+            <h4>You have a job offer</h4>
+            <h3>@Model.Job.Title &commat; @Model.Job.Company</h3>
+        </div>
+        <p class="mt-2">Please select any one option to proceed further with your application</p>
+        <div class="d-flex justify-content-center m-3 gap-5">
+            <a class="btn btn-success shadow-none" asp-action="AcceptJobOffer" asp-route-applicationId="@Model.ApplicationId">Accept</a>
+            <a class="btn btn-danger shadow-none" asp-action="DeclineJobOffer" asp-route-applicationId="@Model.ApplicationId">Decline</a>
+        </div>
+    </div>
+</div>

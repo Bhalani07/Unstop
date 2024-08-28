@@ -1,0 +1,93 @@
+.login-page-right-bg {
+    right: 0;
+    top: 0;
+    width: 600px;
+    height: 450px;
+}
+
+.login-page-right-bg img{
+    width: 600px;
+    height: 450px;
+}
+
+.login-page-left-bg {
+    left: 0;
+    bottom: 0;
+    width: 600px;
+    height: 450px;
+}
+
+.login-page-left-bg img{
+    width: 600px;
+    height: 450px;
+}
+
+.login-page-form{
+    height: 100vh;
+}
+
+.login-page-form-left {
+    border-radius: 12px 60px 0;
+    background-color: #FFC700;
+}
+
+.login-page-form-left img{
+    width: 500px;
+    height: 500px;
+}
+
+@media (max-width: 1200px) {
+    .login-page-form-left{
+        display: none;
+    }
+}
+
+@media (max-width: 600px) {
+    .login-page-right-bg {
+        display: none;
+    }
+
+    .login-page-left-bg {
+        display: none;
+    }
+}
+
+.carousel-item {
+    position: absolute;
+    width: 100%;
+    opacity: 0;
+    transition: opacity 2s ease-in-out;
+}
+
+    .carousel-item.active {
+        position: relative;
+        opacity: 1;
+        animation: fadeIn 2s forwards;
+    }
+
+        .carousel-item-next,
+        .carousel-item-prev,
+        .carousel-item.active.carousel-item-end {
+            animation: fadeOut 2s forwards;
+        }
+
+@keyframes fadeIn {
+    0% {
+        opacity: 0.2;
+    }
+
+    100% {
+        opacity: 1;
+    }
+}
+
+@keyframes fadeOut {
+    0% {
+        opacity: 1;
+    }
+
+    100% {
+        opacity: 0;
+    }
+}
+

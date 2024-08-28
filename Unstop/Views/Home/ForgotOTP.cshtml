@@ -1,0 +1,121 @@
+﻿@model Unstop.Models.DTO.ForgotPasswordModel;
+
+@{
+    ViewData["Title"] = "OTP Verification";
+}
+
+<style>
+    .otp {
+        display: inline-block;
+        width: 50px;
+        height: 50px;
+        text-align: center;
+    }
+</style>
+
+
+<div class="container-fluid login-page">
+    <div class="position-absolute z-n1 login-page-right-bg">
+        <img src="https://d8it4huxumps7.cloudfront.net/uploads/images/login/right-vector.png?d=1194x852" alt="login-right" class="" />
+    </div>
+
+    <div class="d-flex justify-content-center align-items-center login-page-form">
+        <div class="container border border-1 rounded-2 shadow-lg bg-white px-lg-3 px-1 py-5 d-flex justify-content-around">
+            <div id="carouselExampleIndicators" class="carousel slide login-page-form-left p-lg-5 p-md-3 p-1" data-bs-ride="carousel">
+                <div class="carousel-inner">
+                    <div class="carousel-item active">
+                        <img src="https://d8it4huxumps7.cloudfront.net/uploads/images/login/login-img-1.png?d=734x734" alt="login-middle">
+                    </div>
+                    <div class="carousel-item">
+                        <img src="https://d8it4huxumps7.cloudfront.net/uploads/images/login/login-img-6.png?d=734x734" alt="login-middle">
+                    </div>
+                </div>
+            </div>
+
+            <div class="login-page-form-right d-flex flex-column justify-content-around align-items-center w-100 p-lg-5 m-lg-5 p-md-3 m-md-3 p-1 m-1">
+                <div class="d-flex flex-column justify-content-start w-100">
+                    <h3>Email Verification</h3>
+                    <h6 class="text-muted">Enter the 6-digit verification code that was sent to your email address.</h6>
+                </div>
+
+                <form method="post" class="w-100">
+                    <input type="hidden" asp-for="Email" id="emailValue" />
+                    <input type="hidden" asp-for="OtpCode" id="otpValue" />
+
+                    <div class="container d-flex justify-content-center gap-sm-4 gap-1 p-sm-5 p-3 my-3">
+                        <input class="otp" id="otp1" type="text" oninput='digitValidate(this)' onkeyup='tabChange(1)' maxlength=1>
+                        <input class="otp" id="otp2" type="text" oninput='digitValidate(this)' onkeyup='tabChange(2)' maxlength=1>
+                        <input class="otp" id="otp3" type="text" oninput='digitValidate(this)' onkeyup='tabChange(3)' maxlength=1>
+                        <input class="otp" id="otp4" type="text" oninput='digitValidate(this)' onkeyup='tabChange(4)' maxlength=1>
+                        <input class="otp" id="otp5" type="text" oninput='digitValidate(this)' onkeyup='tabChange(5)' maxlength=1>
+                        <input class="otp" id="otp6" type="text" oninput='digitValidate(this)' onkeyup='tabChange(6)' maxlength=1>
+                    </div>
+
+                    <div class="text-center text-muted my-3" id="resendText">
+                        Resend OTP in <span id="countdowntimer"> 60 </span> Seconds
+                    </div>
+
+                    <div class="d-flex justify-content-center gap-3 mb-3">
+                        <div class="w-100">
+                            <button class="btn btn-primary rounded-pill shadow-none w-100" type="submit" disabled id="verifyBtn"><b>Verify</b></button>
+                        </div>
+                        <div id="resendBtn" class="d-none w-100">
+                            <a asp-action="ForgotPost" asp-controller="Home" asp-route-email="@Model.Email" class="btn btn-secondary rounded-pill w-100"><i class="fa-solid fa-envelope me-2"></i>Resend Email</a>
+                        </div>
+                    </div>
+
+                    <a asp-action="Login" asp-controller="Home" class="btn border border-1 rounded-pill shadow-none w-100 text-primary fw-bold"><i class="fa-solid fa-chevron-left me-2"></i>Back to login</a>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="position-absolute z-n1 login-page-left-bg">
+        <img src="https://d8it4huxumps7.cloudfront.net/uploads/images/login/left-vector.png?d=1190x874" alt="login-left" class="" />
+    </div>
+</div>
+
+@section Scripts{
+    <partial name="_ValidationScriptsPartial" />
+
+    <script>
+        let digitValidate = function (ele) {
+            ele.value = ele.value.replace(/[^0-9]/g, '');
+
+            const otp1 = $('#otp1').val();
+            const otp2 = $('#otp2').val();
+            const otp3 = $('#otp3').val();
+            const otp4 = $('#otp4').val();
+            const otp5 = $('#otp5').val();
+            const otp6 = $('#otp6').val();
+
+            var finalOtp = otp1 + otp2 + otp3 + otp4 + otp5 + otp6;
+
+            $('#otpValue').val(finalOtp);
+
+            if (finalOtp.length == 6) {
+                $('#verifyBtn').prop("disabled", false);
+            }
+        }
+
+        let tabChange = function (val) {
+            let ele = document.querySelectorAll('.otp');
+            if (ele[val - 1].value != '') {
+                ele[val].focus()
+            } else if (ele[val - 1].value == '') {
+                ele[val - 2].focus()
+            }
+        }
+
+        var timeleft = 60;
+        var downTimer = setInterval(function () {
+            timeleft--;
+            document.getElementById("countdowntimer").textContent = timeleft;
+            if (timeleft <= 0) {
+                clearInterval(downTimer);
+                $('#resendText').hide();
+                $('#resendBtn').removeClass("d-none");
+            }
+        }, 1000);
+    </script>
+}

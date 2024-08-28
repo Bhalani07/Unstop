@@ -1,0 +1,296 @@
+﻿@inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpAcc
+@model Unstop.Models.VM.JobsVM;
+
+@{
+    string minHL = ViewBag.SortBy == "minsalary" && ViewBag.SortOrder == "desc" ? "active" : "";
+    string minLH = ViewBag.SortBy == "minsalary" && ViewBag.SortOrder == "asc" ? "active" : "";
+    string maxHL = ViewBag.SortBy == "maxsalary" && ViewBag.SortOrder == "desc" ? "active" : "";
+    string maxLH = ViewBag.SortBy == "maxsalary" && ViewBag.SortOrder == "asc" ? "active" : "";
+
+    int callId = 1;
+    if (HttpAcc.HttpContext.Session.GetString("sessionUserRole") == "Candidate")
+    {
+        callId = 2;
+    }
+}
+
+<div class="container mb-5 pb-5">
+    <div class="row m-2">
+        <div class="col-md-3 col-12 my-2">
+            <input type="text" class="rounded-pill border border-2 py-2 ps-3 w-100" placeholder="Search..." onkeyup="seachJob(this.value, @callId, `@ViewBag.SortBy`, `@ViewBag.SortOrder`, `@ViewBag.JobType`, `@ViewBag.JobTime`, `@ViewBag.WorkingDays`, `@ViewBag.JobStatus`, false, `@ViewBag.PreferredJob`, `@ViewBag.PageSize`)" id="jobSearchInput" value="@ViewBag.Search" />
+        </div>
+        <div class="col-md-9 col-12 d-flex justify-content-end gap-3 my-2">
+
+            <div class="btn-group">
+                <button class="btn dropdown-toggle rounded-pill py-2 px-3 shadow-none border border-2" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    Sort
+                </button>
+                <ul class="dropdown-menu dropdown-menu-md-end">
+                    <li>
+                        <button type="button" class="dropdown-item @minHL" onclick="seachJob(`@ViewBag.Search`, @callId, 'minsalary', 'desc', `@ViewBag.JobType`, `@ViewBag.JobTime`, `@ViewBag.WorkingDays`, `@ViewBag.JobStatus`, false, `@ViewBag.PreferredJob`, `@ViewBag.PageSize`)">
+                            Min Salary ( High to Low )
+                        </button>
+                    </li>
+                    <li>
+                        <button type="button" class="dropdown-item @minLH" onclick="seachJob(`@ViewBag.Search`, @callId, 'minsalary', 'asc', `@ViewBag.JobType`, `@ViewBag.JobTime`, `@ViewBag.WorkingDays`, `@ViewBag.JobStatus`, false, `@ViewBag.PreferredJob`, `@ViewBag.PageSize`)">
+                            Min Salary ( Low to High )
+                        </button>
+                    </li>
+                    <li>
+                        <button type="button" class="dropdown-item @maxHL" onclick="seachJob(`@ViewBag.Search`, @callId, 'maxsalary', 'desc', `@ViewBag.JobType`, `@ViewBag.JobTime`, `@ViewBag.WorkingDays`, `@ViewBag.JobStatus`, false, `@ViewBag.PreferredJob`, `@ViewBag.PageSize`)">
+                            Max Salary ( High to Low )
+                        </button>
+                    </li>
+                    <li>
+                        <button type="button" class="dropdown-item @maxLH" onclick="seachJob(`@ViewBag.Search`, @callId, 'maxsalary', 'asc', `@ViewBag.JobType`, `@ViewBag.JobTime`, `@ViewBag.WorkingDays`, `@ViewBag.JobStatus`, false, `@ViewBag.PreferredJob`, `@ViewBag.PageSize`)">
+                            Max Salary ( Low to High )
+                        </button>
+                    </li>
+                </ul>
+            </div>
+
+            <button type="button" class="btn btn-primary rounded-pill py-2 px-3 shadow-none" data-bs-toggle="modal" data-bs-target="#filterModal"><i class="fa-solid fa-filter"></i> Filters</button>
+
+        </div>
+    </div>
+
+    @if (Model.Jobs != null)
+    {
+        @if (@Model.Jobs.Count() != 0)
+        {
+            <div class="row mb-5">
+                @foreach (var job in Model.Jobs)
+                {
+                    DateTime lastDate = DateTime.Parse(job.LastDate.ToString(), null, System.Globalization.DateTimeStyles.RoundtripKind);
+                    DateTime currentDate = DateTime.Now;
+                    TimeSpan deadLine = lastDate - currentDate;
+
+                    <div class="col-12">
+                        <div class="row border border-1 rounded-2 m-2 p-1">
+                            <div class="col-sm-2 col-4 d-flex justify-content-center align-items-center">
+                                @if (HttpAcc.HttpContext.Session.GetString("sessionUserRole") == "Company")
+                                {
+                                    <img class="d-block w-50" src="https://d8it4huxumps7.cloudfront.net/uploads/images/unstop/svg/unstop-logo.svg" alt="job-photo" />
+                                }
+                                else
+                                {
+                                    <button type="button" class="btn d-flex justify-content-center align-items-center" onclick="openCompanyInformation('@job.Company-Details.png')">
+                                        <img class="d-block w-50" src="~/QRs/@job.Company-Details.png" alt="compnay-qr" />
+                                    </button>
+                                }                                
+                            </div>
+                            <div class="col-sm-10 col-8">
+                                <h3>@job.Title</h3>
+                                <p><i class="fa-solid fa-building"></i> @job.Company</p>
+                                <p><i class="fa-solid fa-location-dot"></i> @job.Location</p>
+                            </div>
+
+                            @if (HttpAcc.HttpContext.Session.GetString("sessionUserRole") != "Company")
+                            {
+                                <div class="col-12">
+                                    <div class="row">
+                                        <div class="col-sm-2 col-4">
+                                            <a class="btn btn-primary form-control btn-block shadow-none" asp-action="JobInformation" asp-controller="Candidate" asp-route-jobId="@job.JobId" target="_blank">Apply</a>
+                                        </div>
+                                        <div class="col-sm-5 col-4">
+                                            @job.JobType
+                                        </div>
+                                        <div class="col-sm-5 col-4 d-flex justify-content-end">
+                                            <p class="text-danger"><i class="fa-solid fa-clock"></i> @deadLine.Days days left</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="col-12">
+                                    <div class="row">
+                                        <div class="col-sm-2 col-4 d-flex justify-content-center fw-bold fs-5">
+                                            Actions:
+                                        </div>
+                                        <div class="col-auto">
+                                            <a class="btn btn-primary shadow-none" asp-action="JobInformation" asp-controller="Company" asp-route-jobId="@job.JobId" target="_blank">
+                                                <i class="fa-solid fa-eye d-sm-none d-block"></i>
+                                                <span class="d-none d-sm-block">View</span>
+                                            </a>
+                                            <a class="btn btn-primary shadow-none" asp-action="EditJob" asp-controller="Company" asp-route-jobId="@job.JobId">
+                                                <i class="fa-solid fa-pen-to-square d-sm-none d-block"></i>
+                                                <span class="d-none d-sm-block">Edit</span>
+                                            </a>
+                                            <button class="btn btn-danger shadow-none" type="button" onclick="openDeleteConfirmation(@job.JobId)">
+                                                <i class="fa-solid fa-trash d-sm-none d-block"></i>
+                                                <span class="d-none d-sm-block">Delete</span>
+                                            </button>
+                                            <a class="btn btn-success shadow-none position-relative" asp-action="Applicants" asp-controller="Company" asp-route-jobId="@job.JobId">
+                                                <i class="fa-solid fa-users d-sm-none d-block"></i>
+                                                <span class="d-none d-sm-block">Applicants</span>
+                                                <span class="position-absolute top-0 start-100 translate-middle p-2 bg-danger border border-light rounded-circle">
+                                                    <span class="visually-hidden">New alerts</span>
+                                                </span>
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                }
+            </div>
+
+            <div class="row mt-5">
+                <div class="col-12 d-flex flex-column justify-content-center align-items-center">
+                    <p class="mb-3">
+                        Page @Model.Pagination.PageNumber Out of @Model.Pagination.TotalPages
+                    </p>
+                    <ul class="pagination">
+                        <li class="page-item @(Model.Pagination.PageNumber == 1 ? "disabled" : "")">
+                            <a class="page-link shadow-none" asp-action="Jobs" asp-route-pageNumber="@(Model.Pagination.PageNumber - 1)"
+                               asp-route-pageSize="@Model.Pagination.PageSize" asp-route-JobType="@ViewBag.JobType" asp-route-JobTiming="@ViewBag.JobTime" asp-route-WorkingDays="@ViewBag.WorkingDays" asp-route-sortBy="@ViewBag.SortBy" , asp-route-sortOrder="@ViewBag.SortOrder" asp-route-search="@ViewBag.Search" asp-route-jobStatus="@ViewBag.JobStatus" asp-route-isPreferredJobs="@ViewBag.PreferredJob">
+                                Previous
+                            </a>
+                        </li>
+                        @for (int i = 1; i <= Model.Pagination.TotalPages; i++)
+                        {
+                            <li class="page-item @(Model.Pagination.PageNumber == i ? "active" : "")">
+                                <a class="page-link shadow-none" asp-action="Jobs" asp-route-pageNumber="@i"
+                                   asp-route-pageSize="@Model.Pagination.PageSize" asp-route-JobType="@ViewBag.JobType" asp-route-JobTiming="@ViewBag.JobTime" asp-route-WorkingDays="@ViewBag.WorkingDays" asp-route-sortBy="@ViewBag.SortBy" , asp-route-sortOrder="@ViewBag.SortOrder" asp-route-search="@ViewBag.Search" asp-route-jobStatus="@ViewBag.JobStatus" asp-route-isPreferredJobs="@ViewBag.PreferredJob">
+                                    @i
+                                </a>
+                            </li>
+                        }
+                        <li class="page-item @(Model.Pagination.PageNumber == Model.Pagination.TotalPages ? "disabled" : "")">
+                            <a class="page-link shadow-none" asp-action="Jobs" asp-route-pageNumber="@(Model.Pagination.PageNumber + 1)"
+                               asp-route-pageSize="@Model.Pagination.PageSize" asp-route-JobType="@ViewBag.JobType" asp-route-JobTiming="@ViewBag.JobTime" asp-route-WorkingDays="@ViewBag.WorkingDays" asp-route-sortBy="@ViewBag.SortBy" , asp-route-sortOrder="@ViewBag.SortOrder" asp-route-search="@ViewBag.Search" asp-route-jobStatus="@ViewBag.JobStatus" asp-route-isPreferredJobs="@ViewBag.PreferredJob">
+                                Next
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        }
+        else
+        {
+            <div class="d-flex flex-column justify-content-center align-items-center mt-5 pt-5">
+                <div class="mt-5 pt-5">
+                    <img src="https://d8it4huxumps7.cloudfront.net/uploads/images/64dc4c904c175_no_search_result.png" style="height: 200px">
+                </div>
+                <h4 class="text-center">No Jobs Found </h4>
+            </div>
+        }
+    }
+    else
+    {
+        <div class="d-flex flex-column justify-content-center align-items-center mt-5 pt-5">
+            <div class="mt-5 pt-5">
+                <img src="https://d8it4huxumps7.cloudfront.net/uploads/images/64dc4c904c175_no_search_result.png" style="height: 200px">
+            </div>
+            <h4 class="text-center">No Jobs Found </h4>
+        </div>
+    }
+
+</div>
+
+<div class="modal fade" id="filterModal" tabindex="-1" aria-labelledby="filterModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered p-5">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="filterModalLabel">Filters</h1>
+                <button type="button" class="btn-close shadow-none" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form onsubmit="filterJob(@callId, `@ViewBag.PreferredJob`, `@ViewBag.PageSize`)" id="jobFilterForm">
+                <input type="hidden" name="search" value=@ViewBag.Search />
+                <input type="hidden" name="sortBy" value=@ViewBag.SortBy />
+                <input type="hidden" name="sortOrder" value=@ViewBag.SortOrder />
+
+                <div class="modal-body">
+
+                    @if (HttpAcc.HttpContext.Session.GetString("sessionUserRole") == "Company")
+                    {
+                        <div class="d-flex justify-content-center mb-3 p-2 gap-2">
+                            <input type="radio" @(ViewBag.JobStatus == "all" ? "checked" : "") class="btn-check shadow-none" name="jobStatus" value="all" id="allStatus" autocomplete="off" checked>
+                            <label class="btn btn-outline-primary" for="allStatus">All</label>
+
+                            <input type="radio" @(ViewBag.JobStatus == "active" ? "checked" : "") class="btn-check shadow-none" name="jobStatus" value="active" id="activeStatus" autocomplete="off">
+                            <label class="btn btn-outline-primary" for="activeStatus">Active</label>
+
+                            <input type="radio" @(ViewBag.JobStatus == "inactive" ? "checked" : "") class="btn-check shadow-none" name="jobStatus" value="inactive" id="inActiveStatus" autocomplete="off">
+                            <label class="btn btn-outline-primary" for="inActiveStatus">In Active</label>
+                        </div>
+                    }
+
+                    <div>
+                        <div class="fw-bold">Type</div>
+                        <hr />
+                        <div class="m-2 d-flex flex-wrap mb-3">
+                            <div class="form-check mx-2">
+                                <input value="Work From Office" class="form-check-input shadow-none" type="radio" name="jobType" id="jobType1" @(ViewBag.JobType == "Work From Office" ? "checked" : "")>
+                                <label class="form-check-label" for="jobType1">
+                                    Work From Office
+                                </label>
+                            </div>
+                            <div class="form-check mx-2">
+                                <input value="Hybrid" class="form-check-input shadow-none" type="radio" name="jobType" id="jobType2" @(ViewBag.JobType == "Hybrid" ? "checked" : "")>
+                                <label class="form-check-label" for="jobType2">
+                                    Hybrid
+                                </label>
+                            </div>
+                            <div class="form-check mx-2">
+                                <input value="Work From Home" class="form-check-input shadow-none" type="radio" name="jobType" id="jobType3" @(ViewBag.JobType == "Work From Home" ? "checked" : "")>
+                                <label class="form-check-label" for="jobType3">
+                                    Work From Home
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="fw-bold">Timing</div>
+                        <hr />
+                        <div class="m-2 d-flex flex-wrap mb-3">
+                            <div class="form-check mx-2">
+                                <input value="Full Time" class="form-check-input shadow-none" type="radio" name="jobTiming" id="jobTime1" @(ViewBag.JobTime == "Full Time" ? "checked" : "")>
+                                <label class="form-check-label" for="jobTime1">
+                                    Full Time
+                                </label>
+                            </div>
+                            <div class="form-check mx-2">
+                                <input value="Part Time" class="form-check-input shadow-none" type="radio" name="jobTiming" id="jobime2" @(ViewBag.JobTime == "Part Time" ? "checked" : "")>
+                                <label class="form-check-label" for="jobTime2">
+                                    Part Time
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="fw-bold">Working Days</div>
+                        <hr />
+                        <div class="m-2 d-flex flex-wrap mb-3">
+                            <div class="form-check mx-2">
+                                <input value="4" class="form-check-input shadow-none" type="radio" name="workingDays" id="jobDays1" @(ViewBag.WorkingDays == 4 ? "checked" : "")>
+                                <label class="form-check-label" for="jobDays1">
+                                    4 Days
+                                </label>
+                            </div>
+                            <div class="form-check mx-2">
+                                <input value="5" class="form-check-input shadow-none" type="radio" name="workingDays" id="jobDays2" @(ViewBag.WorkingDays == 5 ? "checked" : "")>
+                                <label class="form-check-label" for="jobDays2">
+                                    5 Days
+                                </label>
+                            </div>
+                            <div class="form-check mx-2">
+                                <input value="6" class="form-check-input shadow-none" type="radio" name="workingDays" id="jobDays3" @(ViewBag.WorkingDays == 6 ? "checked" : "")>
+                                <label class="form-check-label" for="jobDays3">
+                                    6 Days
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn border border-2 shadow-none" data-bs-dismiss="modal" onclick="seachJob(`@ViewBag.Search`, @callId, `@ViewBag.SortBy`, `@ViewBag.SortOrder`, `@ViewBag.JobType`, `@ViewBag.JobTime`, `@ViewBag.WorkingDays`, `@ViewBag.JobStatus`, true, `@ViewBag.PreferredJob`, `@ViewBag.PageSize`)">Clear</button>
+                    <button type="reset" class="btn btn-secondary shadow-none">Reset</button>
+                    <button type="submit" class="btn btn-primary shadow-none">Apply</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,76 @@
+﻿@model IEnumerable<Unstop.Models.DTO.InterviewDTO>;
+
+@{
+    ViewData["Title"] = "Calendar";
+}
+
+<style>
+    .fc-h-event .fc-event-time{
+        overflow: visible !important;
+    }
+</style>
+
+<partial name="_CandidateHeader" />
+
+<div class="container mb-5 pb-5">
+    <div id='candidateCalendar'></div>
+    <div id="candidateCalendarModalContainer"></div>
+</div>
+
+<partial name="_Footer" />
+
+
+<script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.14/index.global.min.js'></script>
+<script>
+    const navLinks = document.querySelectorAll('.nav-link');
+    const currentNav = document.getElementById('nav-calendar');
+    navLinks.forEach(nav => nav.classList.remove('active'));
+    currentNav.classList.add('active');
+
+    document.addEventListener('DOMContentLoaded', function () {
+        var events = [];
+
+        @foreach(var interview in Model)
+        {
+            var background = "blue";
+            var border = "blue";
+
+            if(interview.Complete == true)
+            {
+                background = "green";
+                border = "green";
+            }
+
+            <text>
+            events.push({
+                id: @interview.InterviewId,
+                title: "@interview.InterviewTitle",
+                start: "@interview.InterviewDate.ToString("yyyy-MM-dd") @interview.StartTime.ToString()",
+                end: "@interview.InterviewDate.ToString("yyyy-MM-dd") @interview.EndTime.ToString()",
+                description: "@interview.Location",
+                backgroundColor: "@background",
+                borderColor: "@border",
+                textColor: "white",
+                display: "block"
+            })
+            </text>
+        }
+
+        var calendarEl = document.getElementById('candidateCalendar');
+        var calendar = new FullCalendar.Calendar(calendarEl, {
+            headerToolbar: { center: 'dayGridMonth,timeGridWeek' }, 
+            initialView: 'dayGridMonth',
+            events: events,
+            eventClick: function (info) {
+                //console.log(info.event.title);
+                openInterviewDetailsModalForCandidate(info.event.id, info.event.title);
+            }
+        });
+        calendar.render();
+        // calendar.on('dateClick', function (info) {
+        //     console.log('clicked on ' + info.dateStr);
+        // });
+
+        });
+
+</script>

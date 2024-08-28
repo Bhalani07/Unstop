@@ -1,0 +1,18 @@
+﻿@using Newtonsoft.Json;
+@model Unstop.Models.DTO.OfferDTO;
+
+<div id="reportViewer"></div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            $("#reportViewer").boldReportViewer({
+                reportServiceUrl: "/Report",
+                reportPath: "OfferLetterReport.rdlc",
+                parameters: [
+                    { name: "OfferDTO", value: @Html.Raw(JsonConvert.SerializeObject(Model)) }
+                ]
+            });
+        });
+    </script>
+}

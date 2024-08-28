@@ -1,0 +1,12 @@
+﻿@model string;
+
+@(
+    Html.Kendo().DropDownListFor(m => m)
+    .DataTextField("Text")
+    .DataValueField("Value")
+    .BindTo(new[]
+    {
+        new { Text = "Full Time", Value = "Full Time"},
+        new { Text = "Part Time", Value = "Part Time"}
+    })
+)

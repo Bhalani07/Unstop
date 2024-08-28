@@ -1,0 +1,103 @@
+﻿@model Unstop.Models.DTO.RegistrationModel;
+
+@{
+    ViewData["Title"] = "Register Page";
+}
+
+<div class="container-fluid login-page">
+    <div class="position-absolute z-n1 login-page-right-bg">
+        <img src="https://d8it4huxumps7.cloudfront.net/uploads/images/login/right-vector.png?d=1194x852" alt="login-right" class="" />
+    </div>
+
+    <div class="d-flex justify-content-center align-items-center login-page-form">
+        <div class="container border border-1 rounded-2 shadow-lg bg-white px-lg-3 px-1 py-5 d-flex justify-content-around">
+            <div id="carouselExampleIndicators" class="carousel slide login-page-form-left p-lg-5 p-md-3 p-1" data-bs-ride="carousel">
+                <div class="carousel-inner">
+                    <div class="carousel-item active">
+                        <img src="https://d8it4huxumps7.cloudfront.net/uploads/images/login/login-img-1.png?d=734x734" alt="login-middle">
+                    </div>
+                    <div class="carousel-item">
+                        <img src="https://d8it4huxumps7.cloudfront.net/uploads/images/login/login-img-6.png?d=734x734" alt="login-middle">
+                    </div>
+                </div>
+            </div>
+
+            <div class="login-page-form-right d-flex flex-column justify-content-around align-items-center w-100 p-lg-5 m-lg-5 p-md-3 m-md-3 p-1 m-1">
+                <div class="d-flex justify-content-center mb-5">
+                    <img src="https://d8it4huxumps7.cloudfront.net/uploads/images/unstop/svg/unstop-logo.svg" alt="login-logo" class="h-100 w-75" />
+                </div>
+
+                <form class="w-100" method="post">
+                    <div class="mb-3">
+                        <p class="mb-2">Create account as</p>
+                        <input asp-for="Role" value="Candidate" type="radio" class="btn-check" name="Role" id="candidate-outlined" autocomplete="off" checked>
+                        <label class="btn btn-outline-primary shadow-none rounded-pill px-3" for="candidate-outlined">Candidate</label>
+
+                        <input asp-for="Role" value="Company" type="radio" class="btn-check" name="Role" id="company-outlined" autocomplete="off">
+                        <label class="btn btn-outline-primary shadow-none rounded-pill px-3" for="company-outlined">Company</label>
+                    </div>
+                    <div class="row g-1 gap-3">
+                        <div class="col form-floating mb-3 position-relative">
+                            <input asp-for="FirstName" type="text" class="form-control bg-transparent border border-1 border-primary rounded-2 shadow-none" id="floatingFirstName" placeholder="First Name">
+                            <label for="floatingFirstName">First Name</label>
+                            <span asp-validation-for="FirstName" class="text-danger"></span>
+                        </div>
+                        <div class="col form-floating mb-3 position-relative">
+                            <input asp-for="LastName" type="text" class="form-control bg-transparent border border-1 border-primary rounded-2 shadow-none" id="floatingLastName" placeholder="Last Name">
+                            <label for="floatingLastName">Last Name</label>
+                            <span asp-validation-for="LastName" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="form-floating mb-3 position-relative">
+                        <input asp-for="Email" type="email" class="form-control bg-transparent border border-1 border-primary rounded-2 shadow-none" id="floatingEmail" placeholder="Email Id">
+                        <label for="floatingEmail">Email</label>
+                        <span asp-validation-for="Email" class="text-danger"></span>
+                    </div>
+                    <div class="row g-1 gap-3 mb-3">
+                        <div class="col form-floating mb-3 position-relative">
+                            <input asp-for="Password" type="password" class="form-control bg-transparent border border-1 border-primary rounded-2 shadow-none" id="floatingPassword" placeholder="Enter Password">
+                            <label for="floatingPassword">Password</label>
+                            <span asp-validation-for="Password" class="text-danger"></span>
+                            <div class="eye-icon position-absolute top-0 end-0 mx-3 my-3">
+                                <i class="fa-solid fa-eye fs-5 text-muted mt-1" id="togglePassword" onclick="showPassword()"></i>
+                            </div>
+                        </div>
+                        <div class="col form-floating mb-3 position-relative">
+                            <input asp-for="ConfirmPassword" type="password" class="form-control bg-transparent border border-1 border-primary rounded-2 shadow-none" id="floatingConfirmPassword" placeholder="Enter Confirm Password">
+                            <label for="floatingConfirmPassword">Confirm Password</label>
+                            <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div class="me-2">
+                            <span>Already have an account? <a asp-action="Login" asp-controller="Home">Login</a></span>
+                        </div>
+                        <button class="btn btn-primary rounded-pill shadow-none px-5" type="submit"><b>Create</b></button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="position-absolute z-n1 login-page-left-bg">
+        <img src="https://d8it4huxumps7.cloudfront.net/uploads/images/login/left-vector.png?d=1190x874" alt="login-left" class="" />
+    </div>
+</div>
+
+@section Scripts{
+    <partial name="_ValidationScriptsPartial" />
+
+    <script>
+        function showPassword() {
+
+            const togglePassword = document.querySelector("#togglePassword");
+            const password = document.querySelector("#floatingPassword");
+
+            const type = password.getAttribute("type") === "password" ? "text" : "password";
+            password.setAttribute("type", type);
+
+            togglePassword.classList.toggle('fa-eye');
+            togglePassword.classList.toggle('fa-eye-slash');
+        }
+    </script>
+}

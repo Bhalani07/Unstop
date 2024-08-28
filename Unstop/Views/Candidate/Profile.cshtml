@@ -1,0 +1,95 @@
+﻿@model Unstop.Models.DTO.CandidateDTO;
+
+@{
+    ViewData["Title"] = "Profile";
+}
+
+<partial name="_CandidateHeader" />
+
+<div class="container mb-5 pb-5">
+    <div class="row p-5" style="background-color: #BFDCF9">
+        <div class="col-lg-7 col-12 ps-sm-4 ps-1 ms-md-5 ms-1 my-5 d-md-flex">
+            <div class="p-2 rounded-circle d-flex justify-content-center" style="height: 100px; width: 100px; border-right: 5px solid #0d6efd;">
+                <img class="d-block w-100" src="~/images/user.png" alt="user-photo" />
+            </div>
+            <div class="ms-sm-3 mt-sm-0 mt-3">
+                <h4>Hello,</h4>
+                <h1>@Model.FullName</h1>
+                <p><i class="fa-solid fa-envelope"></i> @Model.User.Email</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="container p-md-5 pt-5">
+        <form method="post">
+            <input type="hidden" asp-for="@Model.CandidateId" />
+            <input type="hidden" asp-for="@Model.UserId" />
+
+            <div class="mb-3 row">
+                <label for="inputName" class="col-sm-2 col-form-label">Full Name <sup class="text-danger">*</sup></label>
+                <div class="col-sm-10">
+                    <input asp-for="@Model.FullName" type="text" class="form-control shadow-none" id="inputName" >
+                    <span asp-validation-for="FullName" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="mb-3 row">
+                <label for="inputBirthDate" class="col-sm-2 col-form-label">Date of Birth <sup class="text-danger">*</sup></label>
+                <div class="col-sm-10">
+                    <input asp-for="@Model.DateOfBirth" type="date" class="form-control shadow-none" id="inputBirthDate" max="@DateTime.Now.Date.ToString("yyyy-MM-dd")">
+                    <span asp-validation-for="DateOfBirth" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="mb-3 row">
+                <label for="inputGender" class="col-sm-2 col-form-label">Gender <sup class="text-danger">*</sup></label>
+                <div class="col-sm-10 d-flex align-items-center">
+                    <div class="form-check form-check-inline">
+                        <input asp-for="@Model.Gender" class="form-check-input" type="radio" name="Gender" id="inputRadio1" value="Male">
+                        <label class="form-check-label" for="inputRadio1">Male</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input asp-for="@Model.Gender" class="form-check-input" type="radio" name="Gender" id="inputRadio2" value="Female">
+                        <label class="form-check-label" for="inputRadio2">Female</label>
+                    </div>
+                    <span asp-validation-for="Gender" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="mb-3 row">
+                <label for="inputPhone" class="col-sm-2 col-form-label">Phone Number <sup class="text-danger">*</sup></label>
+                <div class="col-sm-10">
+                    <input asp-for="@Model.PhoneNumber" type="tel" class="form-control shadow-none" id="inputPhone" >
+                    <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="mb-3 row">
+                <label for="inputLinkedIn" class="col-sm-2 col-form-label">LinkedIn URL</label>
+                <div class="col-sm-10">
+                    <input asp-for="@Model.LinkedInProfile" type="text" class="form-control shadow-none" id="inputLinkedIn" >
+                    <span asp-validation-for="LinkedInProfile" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="mb-3 row">
+                <label for="inputAddress" class="col-sm-2 col-form-label">Address <sup class="text-danger">*</sup></label>
+                <div class="col-sm-10">
+                    <textarea asp-for="@Model.Address" rows="5" class="form-control shadow-none" id="inputAddress"></textarea>
+                    <span asp-validation-for="Address" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="mb-3 d-flex justify-content-end gap-3">
+                <button type="reset" onclick="resetValidation()" class="btn border border-2 shadow-none fw-bold px-5">Reset</button>
+                <button type="submit" class="btn btn-primary shadow-none fw-bold px-5">Save</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<partial name="_Footer" />
+
+
+@section Scripts{
+    <partial name="_ValidationScriptsPartial" />
+
+    <sctipt>
+        const navLinks = document.querySelectorAll('.nav-link');
+        navLinks.forEach(nav => nav.classList.remove('active'));
+    </sctipt>
+}

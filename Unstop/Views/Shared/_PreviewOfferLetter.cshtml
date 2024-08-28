@@ -1,0 +1,20 @@
+﻿@using Newtonsoft.Json;
+@model Unstop.Models.DTO.OfferDTO;
+
+<div class="modal fade" id="previewOfferLetter" tabindex="-1" aria-labelledby="filterModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-fullscreen p-5">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="btn-close shadow-none" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+            <div class="modal-body">
+                <div id="reportViewer" class="container" style="min-height:80vh; width: 100%;"></div>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,67 @@
+﻿@model Unstop.Models.DTO.InterviewDTO;
+
+@{
+    var roomName = Model.InterviewTitle.Replace(" ", "");
+}
+
+<div class="modal fade" id="interviewDetailsModal" tabindex="-1" aria-labelledby="filterModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered p-5">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="filterModalLabel">Interview Details</h1>
+                <button type="button" class="btn-close shadow-none" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+            <input type="hidden" asp-for="@Model.InterviewId" />
+
+            <div class="modal-body">
+                <div class="p-3 mb-3">
+                    <label for="inputTitle" class="form-label">Title</label>
+                    <textarea asp-for="@Model.InterviewTitle" class="form-control shadow-none" rows="3" id="inputTitle" disabled></textarea>
+                </div>
+                <div class="p-3 mb-3">
+                    <label for="inputDate" class="form-label">Date</label>
+                    <input asp-for="@Model.InterviewDate" class="form-control shadow-none" type="date" id="inputDate" disabled min="@DateTime.UtcNow.Date.ToString("yyyy-MM-dd")">
+                </div>
+                <div class="row p-3">
+                    <div class="col mb-3">
+                        <label for="inputStart" class="form-label">Start Time</label>
+                        <input asp-for="@Model.StartTime" class="form-control shadow-none" type="time" id="inputStart" disabled>
+                    </div>
+                    <div class="col mb-3">
+                        <label for="inputEnd" class="form-label">End Time</label>
+                        <input asp-for="@Model.EndTime" class="form-control shadow-none" type="time" id="inputEnd" disabled>
+                    </div>
+                </div>
+                <div class="p-3 mb-3">
+                    <label for="inputLocation" class="form-label">Location</label>
+                    <input asp-for="@Model.Location" class="form-control shadow-none" type="text" id="inputLocation" disabled>
+                </div>
+
+                <div class="row p-3">
+                    @if (Model.Complete != true)
+                    {
+                        <div class="col mb-3">
+                            <a href="https://talky.io/@roomName" target="_blank" class="btn btn-primary w-100 shadow-none"><i class="fa-solid fa-calendar me-2"></i> Open Meeting</a>
+                        </div>
+                    }
+                    <div class="col mb-3">
+                        <button type="button" class="btn btn-outline-primary shadow-none w-100" onclick="openResume(@Model.Application.ApplicationId, @Model.Application.JobId)">
+                            <i class="fa-solid fa-file"></i> View Resume
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            @* <div class="modal-footer">
+            <button type="reset" class="btn btn-secondary shadow-none" data-bs-dismiss="modal">Cancel</button>
+            <button type="submit" class="btn btn-primary shadow-none">Update</button>
+            </div> *@
+
+        </div>
+    </div>
+</div>
+
+@section Scripts{
+    <partial name="_ValidationScriptsPartial" />
+}

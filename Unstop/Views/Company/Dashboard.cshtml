@@ -1,0 +1,45 @@
+﻿@using Kendo.Mvc.UI;
+
+@{
+    ViewData["Title"] = "Dashboard";
+}
+
+<partial name="_Header" />
+
+<div class="container">
+    <div class="d-flex justify-content-center align-items-center">
+        <div class="d-flex justify-content-center" style="height: 80vh;">
+            <div class="d-flex flex-column justify-content-center align-items-start ms-2 w-50">
+                <h1>Host an <span class="text-primary">Opportunity</span></h1>
+                <p class="text-secondary">
+                    Find the right candidate from a diverse talent pool for your role!
+                </p>
+                <div class="d-flex gap-3 w-100">
+                    <a class="btn btn-primary rounded-pill shadow-none mt-3 w-50 d-flex justify-content-center align-items-center" asp-action="PostJob" asp-controller="Company">
+                        <b>Post Job</b>
+                    </a>
+                    <a class="btn btn-outline-primary rounded-pill shadow-none mt-3 w-50 d-flex justify-content-center align-items-center" asp-action="PostJobFair" asp-controller="Company">
+                        <b>Post Job Fair</b>
+                    </a>
+                </div>
+
+                @* @(Html.Kendo().DatePicker().Name("my-picker")) *@
+                
+            </div>
+            <div class="d-md-flex justify-content-end align-items-center d-none w-50">
+                <img src="https://d8it4huxumps7.cloudfront.net/uploads/images/65799549c718c_post_your.png?d=1082x925" alt="dashboard-img" class="h-75 ms-lg-4 ms-2 ps-lg-5 ps-2 img-fluid" />
+            </div>
+        </div>
+    </div>
+</div>
+
+<partial name="_Footer" />
+
+@section Scripts{
+    <script>
+        const navLinks = document.querySelectorAll('.nav-link');
+        const currentNav = document.getElementById('nav-home');
+        navLinks.forEach(nav => nav.classList.remove('active'));
+        currentNav.classList.add('active');
+    </script>
+}

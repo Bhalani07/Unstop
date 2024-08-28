@@ -1,0 +1,149 @@
+﻿<div class="container">
+    <h3>
+        Container @ViewBag.TabIndex
+    </h3>
+    @if(ViewBag.TabIndex == 1)
+    {
+        <div class="m-2 p-2 table-responsive" style="height: 500px;">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">First</th>
+                        <th scope="col">Last</th>
+                        <th scope="col">Handle</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @for (int i = 1; i <= 5000; i++)
+                    {
+                        <tr>
+                            <th scope="row">@i</th>
+                            <td>Mark</td>
+                            <td>Otto</td>
+                            <td>mdo</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+    else if(ViewBag.TabIndex == 2 || ViewBag.TabIndex == 5)
+    {
+        <div class="m-2 p-2">
+            @(Html.Kendo().Grid<Unstop.Models.VM.ProductVM>()
+                .Name($"productsGrid{ViewBag.TabIndex}")
+                .Columns(columns =>
+                {
+                    columns.Bound(p => p.ProductName);
+                    columns.Bound(p => p.UnitPrice).Width(120);
+                    columns.Bound(p => p.UnitsInStock).Width(120);
+                    columns.Bound(p => p.Discontinued).Width(120);
+                })
+                .Sortable()
+                .Scrollable()
+                .Pageable(pager => pager.Info(true))
+                .HtmlAttributes(new { style = "height:500px;" })
+                .DataSource(dataSource => dataSource
+                    .Ajax()
+                    .PageSize(10)
+                    .ServerOperation(true)
+                    .Model(model => model.Id(p => p.ProductID))
+                    .Read(read => read.Action("Grid_Read", "Company"))
+                )
+            )
+        </div>
+    }
+    else
+    {
+        <div class="m-2 p-2">
+            @(Html.Kendo().Grid<Unstop.Models.VM.ProductVM>()
+                .Name($"productsGrid{ViewBag.TabIndex}")
+                .Columns(columns =>
+                {
+                columns.Bound(p => p.ProductName);
+                columns.Bound(p => p.UnitPrice).Width(120);
+                columns.Bound(p => p.UnitsInStock).Width(120);
+                columns.Bound(p => p.Discontinued).Width(120);
+                })
+                .Sortable()
+                .Scrollable()
+                .HtmlAttributes(new { style = "height:500px;" })
+                .DataSource(dataSource => dataSource
+                    .Ajax()
+                    .Model(model => model.Id(p => p.ProductID))
+                    .Read(read => read.Action("Grid_Read", "Company"))
+                )
+            )
+        </div>
+    }
+
+    @if (ViewBag.TabIndex == 3 || ViewBag.TabIndex == 5 || ViewBag.TabIndex == 7)
+    {
+        <div class="m-2 p-2">
+            <form>
+                <div class="mb-3">
+                    <label for="exampleInputEmail1" class="form-label">Email address</label>
+                    <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
+                    <div id="emailHelp" class="form-text">We'll never share your email with anyone else.</div>
+                </div>
+                <div class="mb-3">
+                    <label for="exampleInputPassword1" class="form-label">Password</label>
+                    <input type="password" class="form-control" id="exampleInputPassword1">
+                </div>
+                <div class="mb-3 form-check">
+                    <input type="checkbox" class="form-check-input" id="exampleCheck1">
+                    <label class="form-check-label" for="exampleCheck1">Check me out</label>
+                </div>
+                <button type="submit" class="btn btn-primary">Submit</button>
+            </form>
+        </div>
+
+        @if(ViewBag.TabIndex == 3)
+        {
+            <div id="extraGrid3" class="m-2 p-2"></div>
+        }
+    }
+</div>
+
+<script>
+    $(document).ready(function () {
+        setTimeout(function () {
+            $("#extraGrid3").kendoGrid({
+                dataSource: {
+                    transport: {
+                        read: {
+                            url: '@Url.Action("Grid_Read", "Company")',
+                            // data: {
+                            //     tags: "nature",
+                            //     format: "json"
+                            // },
+                            dataType: "json", // "jsonp" is required for cross-domain requests; use "json" for same-domain requests
+                            //jsonp: "jsoncallback",
+                        }
+                    },
+                    schema: {
+                        data: "Data",
+                        model: {
+                            fields: [
+                                { field: "ProductName", type: "string" },
+                                { field: "UnitPrice", type: "number" },
+                                { field: "UnitsInStock", type: "number" },
+                                { field: "Discontinued", type: "boolean" },
+                            ],
+                        },
+                    }
+                },
+                columns: [
+                    { field: "ProductName", title: "ProductName" },
+                    { field: "UnitPrice", title: "UnitPrice", width: 120 },
+                    { field: "UnitsInStock", title: "UnitsInStock", width: 150 },
+                    { field: "Discontinued", title: "Discontinued", width: 150 }
+                ],
+                height: 500,
+                scrollable: true,
+                selectable: true
+            });
+        }, 20000);
+    })
+</script>

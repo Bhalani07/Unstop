@@ -1,0 +1,94 @@
+﻿@model Unstop.Models.VM.FavoritesVM;
+
+<div class="container mb-5 pb-5">
+    <div class="row m-2">
+        <div class="col-md-3 col-12 my-2">
+            <input type="text" class="rounded-pill border border-2 py-2 ps-3 w-100" placeholder="Search..." onkeyup="seachFavoriteJob(this.value)" id="favoriteSearchInput" value="@ViewBag.Search" />
+        </div>
+    </div>
+
+    @if (Model.Favorites != null)
+    {
+        @if (@Model.Favorites.Count() != 0)
+        {
+            <div class="row mb-5">
+                @foreach (var favorite in Model.Favorites)
+                {
+                    DateTime lastDate = DateTime.Parse(favorite.Job.LastDate.ToString(), null, System.Globalization.DateTimeStyles.RoundtripKind);
+                    DateTime currentDate = DateTime.Now;
+                    TimeSpan deadLine = lastDate - currentDate;
+
+                    <div class="col-12">
+                        <div class="row border border-1 rounded-2 m-2 p-1">
+                            <div class="col-sm-2 col-4 d-flex justify-content-center align-items-center">
+                                <img class="d-block w-50" src="https://d8it4huxumps7.cloudfront.net/uploads/images/unstop/svg/unstop-logo.svg" alt="job-photo" />
+                            </div>
+                            <div class="col-8">
+                                <h3>@favorite.Job.Title</h3>
+                                <p><i class="fa-solid fa-building"></i> @favorite.Job.Company</p>
+                                <p><i class="fa-solid fa-location-dot"></i> @favorite.Job.Location</p>
+                                <p class="text-danger"><i class="fa-solid fa-calendar"></i> @deadLine.Days days left</p>
+                            </div>
+                            <div class="col-sm-2 col-12 d-flex flex-column justify-content-center align-items-center gap-3">
+                                <a class="btn btn-primary form-control btn-block shadow-none" asp-action="JobInformation" asp-controller="Candidate" asp-route-jobId="@favorite.Job.JobId" target="_blank">Apply</a>
+                                <a class="btn btn-danger form-control btn-block shadow-none" asp-action="RemoveFromFavorite" asp-controller="Candidate" asp-route-jobId="@favorite.Job.JobId" asp-route-callId="1">
+                                    <i class="fa-solid fa-heart me-2"></i> Remove
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+
+            <div class="row mt-5">
+                <div class="col-12 d-flex flex-column justify-content-center align-items-center">
+                    <p class="mb-3">
+                        Page @Model.Pagination.PageNumber Out of @Model.Pagination.TotalPages
+                    </p>
+                    <ul class="pagination">
+                        <li class="page-item @(Model.Pagination.PageNumber == 1 ? "disabled" : "")">
+                            <a class="page-link shadow-none" asp-action="FavoriteJobs" asp-route-pageNumber="@(Model.Pagination.PageNumber - 1)"
+                               asp-route-pageSize="@Model.Pagination.PageSize" asp-route-search="@ViewBag.Search">
+                                Previous
+                            </a>
+                        </li>
+                        @for (int i = 1; i <= Model.Pagination.TotalPages; i++)
+                        {
+                            <li class="page-item @(Model.Pagination.PageNumber == i ? "active" : "")">
+                                <a class="page-link shadow-none" asp-action="FavoriteJobs" asp-route-pageNumber="@i"
+                                   asp-route-pageSize="@Model.Pagination.PageSize" asp-route-search="@ViewBag.Search">
+                                    @i
+                                </a>
+                            </li>
+                        }
+                        <li class="page-item @(Model.Pagination.PageNumber == Model.Pagination.TotalPages ? "disabled" : "")">
+                            <a class="page-link shadow-none" asp-action="FavoriteJobs" asp-route-pageNumber="@(Model.Pagination.PageNumber + 1)"
+                               asp-route-pageSize="@Model.Pagination.PageSize" asp-route-search="@ViewBag.Search">
+                                Next
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        }
+        else
+        {
+            <div class="d-flex flex-column justify-content-center align-items-center mt-5 pt-5">
+                <div class="mt-5 pt-5">
+                    <img src="https://d8it4huxumps7.cloudfront.net/uploads/images/64dc4c904c175_no_search_result.png" style="height: 200px">
+                </div>
+                <h4 class="text-center">Nothing Added to Favorite </h4>
+            </div>
+        }
+    }
+    else
+    {
+        <div class="d-flex flex-column justify-content-center align-items-center mt-5 pt-5">
+            <div class="mt-5 pt-5">
+                <img src="https://d8it4huxumps7.cloudfront.net/uploads/images/64dc4c904c175_no_search_result.png" style="height: 200px">
+            </div>
+            <h4 class="text-center">Nothing Added to Favorite</h4>
+        </div>
+    }
+
+</div>

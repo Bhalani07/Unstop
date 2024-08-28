@@ -1,0 +1,149 @@
+﻿@model Unstop.Models.DTO.UserPreferenceDTO;
+
+@{
+    ViewData["Title"] = "Preferences";
+
+    string home = "", hybrid = "", office = "", full = "", part = "", it = "", edu = "", construct = "", auto = "", health = "", st = "", sm = "", md = "", lg = "", en = "";
+
+    if (Model.JobType != null)
+    {
+        home = Model.JobType.Contains("Work From Home") ? "checked" : "";
+        hybrid = Model.JobType.Contains("Hybrid") ? "checked" : "";
+        office = Model.JobType.Contains("Work From Office") ? "checked" : "";
+    }
+
+    if(Model.JobTime != null)
+    {
+        full = Model.JobTime.Contains("Full Time") ? "checked" : "";
+        part = Model.JobTime.Contains("Part Time") ? "checked" : "";
+    }
+
+    if (Model.Industry != null)
+    {
+        it = Model.Industry.Contains("Information Technology") ? "checked" : "";
+        edu = Model.Industry.Contains("Education") ? "checked" : "";
+        construct = Model.Industry.Contains("Construction") ? "checked" : "";
+        auto = Model.Industry.Contains("Automotive") ? "checked" : "";
+        health = Model.Industry.Contains("Healthcare") ? "checked" : "";
+    }
+
+    if (Model.CompanySize != null)
+    {
+        st = Model.CompanySize.Contains("Start-up") ? "checked" : "";
+        sm = Model.CompanySize.Contains("Small") ? "checked" : "";
+        md = Model.CompanySize.Contains("Medium") ? "checked" : "";
+        lg = Model.CompanySize.Contains("Large") ? "checked" : "";
+        en = Model.CompanySize.Contains("Enterprise") ? "checked" : "";
+    }
+}
+
+<partial name="_CandidateHeader" />
+
+<div class="container">
+    <div class="d-flex flex-column justify-content-center align-items-center mt-3 mb-3">
+        <h2>My Preferences</h2>
+        <h6 class="text-muted">Choose to get best related outcomes</h6>
+    </div>
+
+    <form method="post">
+        <input type="hidden" value="@Model.UserId" name="userId" />
+
+        <div class="d-flex flex-column align-items-center justify-content-center mt-5">
+            <div class="d-flex justify-content-center w-100">
+                <div class="bg-primary w-25" style="height: 5px; margin-top: 15px;"></div>
+                <h4 class="px-sm-5 px-2"> Job Type </h4>
+                <div class="bg-primary w-25" style="height: 5px; margin-top: 15px;"></div>
+            </div>
+
+            <div class="mt-3 d-flex justify-content-center flex-wrap gap-3">
+                <input type="checkbox" name="jobType" value="Work From Home" class="btn-check shadow-none" id="btn-check-1-outlined" autocomplete="off" @home>
+                <label class="btn btn-outline-secondary shadow-none" for="btn-check-1-outlined">Work From Home</label>
+
+                <input type="checkbox" name="jobType" value="Hybrid" class="btn-check shadow-none" id="btn-check-2-outlined" autocomplete="off" @hybrid>
+                <label class="btn btn-outline-secondary shadow-none" for="btn-check-2-outlined">Hybrid</label>
+
+                <input type="checkbox" name="jobType" value="Work From Office" class="btn-check shadow-none" id="btn-check-3-outlined" autocomplete="off" @office>
+                <label class="btn btn-outline-secondary shadow-none" for="btn-check-3-outlined">Work From Office</label>
+            </div>
+        </div>
+
+        <div class="d-flex flex-column align-items-center justify-content-center mt-5">
+            <div class="d-flex justify-content-center w-100">
+                <div class="bg-primary w-25" style="height: 5px; margin-top: 15px;"></div>
+                <h4 class="px-sm-5 px-2"> Job Time </h4>
+                <div class="bg-primary w-25" style="height: 5px; margin-top: 15px;"></div>
+            </div>
+
+            <div class="mt-3 d-flex justify-content-center flex-wrap gap-3">
+                <input type="checkbox" name="jobTime" value="Full Time" class="btn-check shadow-none" id="btn-check-4-outlined" autocomplete="off" @full>
+                <label class="btn btn-outline-secondary shadow-none" for="btn-check-4-outlined">Full Time</label>
+
+                <input type="checkbox" name="jobTime" value="Part Time" class="btn-check shadow-none" id="btn-check-5-outlined" autocomplete="off" @part>
+                <label class="btn btn-outline-secondary shadow-none" for="btn-check-5-outlined">Part Time</label>
+            </div>
+        </div>
+
+        <div class="d-flex flex-column align-items-center justify-content-center mt-5">
+            <div class="d-flex justify-content-center w-100">
+                <div class="bg-primary w-25" style="height: 5px; margin-top: 15px;"></div>
+                <h4 class="px-sm-5 px-2"> Industry </h4>
+                <div class="bg-primary w-25" style="height: 5px; margin-top: 15px;"></div>
+            </div>
+
+            <div class="mt-3 d-flex justify-content-center flex-wrap gap-3">
+                <input type="checkbox" name="industry" value="Information Technology" class="btn-check shadow-none" id="btn-check-6-outlined" autocomplete="off" @it>
+                <label class="btn btn-outline-secondary shadow-none" for="btn-check-6-outlined">Informtion Technology</label>
+
+                <input type="checkbox" name="industry" value="Education" class="btn-check shadow-none" id="btn-check-7-outlined" autocomplete="off" @edu>
+                <label class="btn btn-outline-secondary shadow-none" for="btn-check-7-outlined">Education</label>
+
+                <input type="checkbox" name="industry" value="Construction" class="btn-check shadow-none" id="btn-check-8-outlined" autocomplete="off" @construct>
+                <label class="btn btn-outline-secondary shadow-none" for="btn-check-8-outlined">Construction</label>
+
+                <input type="checkbox" name="industry" value="Automotive" class="btn-check shadow-none" id="btn-check-9-outlined" autocomplete="off" @auto>
+                <label class="btn btn-outline-secondary shadow-none" for="btn-check-9-outlined">Automotive</label>
+
+                <input type="checkbox" name="industry" value="Healthcare" class="btn-check shadow-none" id="btn-check-10-outlined" autocomplete="off" @health>
+                <label class="btn btn-outline-secondary shadow-none" for="btn-check-10-outlined">Healthcare</label>
+            </div>
+        </div>
+
+        <div class="d-flex flex-column align-items-center justify-content-center mt-5 mb-5">
+            <div class="d-flex justify-content-center w-100">
+                <div class="bg-primary w-25" style="height: 5px; margin-top: 15px;"></div>
+                <h4 class="px-sm-5 px-2"> Company Size </h4>
+                <div class="bg-primary w-25" style="height: 5px; margin-top: 15px;"></div>
+            </div>
+
+            <div class="mt-3 d-flex justify-content-center flex-wrap gap-3">
+                <input type="checkbox" name="companySize" value="Start-up" class="btn-check shadow-none" id="btn-check-11-outlined" autocomplete="off" @st>
+                <label class="btn btn-outline-secondary shadow-none" for="btn-check-11-outlined">Start-up</label>
+
+                <input type="checkbox" name="companySize" value="Small" class="btn-check shadow-none" id="btn-check-12-outlined" autocomplete="off" @sm>
+                <label class="btn btn-outline-secondary shadow-none" for="btn-check-12-outlined">Small (1-50 Employees)</label>
+
+                <input type="checkbox" name="companySize" value="Medium" class="btn-check shadow-none" id="btn-check-13-outlined" autocomplete="off" @md>
+                <label class="btn btn-outline-secondary shadow-none" for="btn-check-13-outlined">Medium (51-200 Employess)</label>
+
+                <input type="checkbox" name="companySize" value="Large" class="btn-check shadow-none" id="btn-check-14-outlined" autocomplete="off" @lg>
+                <label class="btn btn-outline-secondary shadow-none" for="btn-check-14-outlined">Large (201-1000 Employees)</label>
+
+                <input type="checkbox" name="companySize" value="Enterprise" class="btn-check shadow-none" id="btn-check-15-outlined" autocomplete="off" @en>
+                <label class="btn btn-outline-secondary shadow-none" for="btn-check-15-outlined">Enterprise (1000+ Employees)</label>
+            </div>
+        </div>
+
+        <div class="d-flex justify-content-center mt-5 mb-5 pb-5">
+            <button type="submit" class="btn btn-primary rounded-pill px-5 fw-bold">Save</button>
+        </div>
+    </form>
+</div>
+
+<partial name="_Footer" />
+
+@section Scripts{
+    <sctipt>
+        const navLinks = document.querySelectorAll('.nav-link');
+        navLinks.forEach(nav => nav.classList.remove('active'));
+    </sctipt>
+}

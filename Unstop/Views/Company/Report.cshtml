@@ -1,0 +1,53 @@
+﻿@{
+    ViewData["Title"] = "Report";
+}
+
+<partial name="_Header" />
+
+<div class="container d-flex flex-column justify-content-center gap-3" style="min-height: 70vh;width: 100%;">
+    <div class="d-flex justify-content-center gap-3">
+        <div class="d-flex align-items-center">Month : </div>
+        <select class="form-select shadow-none" aria-label="Default select example" id="monthDropDown" style="width: 100px;">
+            <option value="6" selected>June</option>
+            <option value="7">July</option>
+            <option value="8">August</option>
+        </select>
+    </div>
+
+    <div id="viewer"></div>
+</div>
+
+<partial name="_Footer" />
+
+@section Scripts{
+    <script type="text/javascript">
+        const navLinks = document.querySelectorAll('.nav-link');
+        const currentNav = document.getElementById('nav-report');
+        navLinks.forEach(nav => nav.classList.remove('active'));
+        currentNav.classList.add('active');
+
+        function onAjaxRequest(args) {
+            var jsonData = {
+                month: $('#monthDropDown').val(),
+            };
+            args.data = jsonData;
+        }
+
+        function initializeReportViewer() {
+            $("#viewer").boldReportViewer({
+                reportServiceUrl: "/Report",
+                reportPath: "JobReport.rdlc",
+                ajaxBeforeLoad: onAjaxRequest
+            });
+        }
+
+        $(document).ready(function () {
+            initializeReportViewer();
+
+            $("#monthDropDown").change(function () {
+                $("#viewer").boldReportViewer("destroy");
+                initializeReportViewer();
+            });
+        });
+    </script>
+}

@@ -1,0 +1,93 @@
+﻿@model Unstop.Models.DTO.InterviewDTO;
+
+<div class="modal fade" id="scheduleInterviewModal" tabindex="-1" aria-labelledby="filterModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered p-5">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="filterModalLabel">Interview Details</h1>
+                <button type="button" class="btn-close shadow-none" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+            <form method="post" enctype="multipart/form-data" id="scheduleInterviewForm" onsubmit="scheduleInterview()">
+                <input type="hidden" asp-for="@Model.ApplicationId" />
+                <input type="hidden" asp-for="@Model.JobId" />
+                <input type="hidden" asp-for="@Model.InterviewTitle" />
+
+                <div class="modal-body">
+                    <div class="p-3 mb-3">
+                        <label for="inputDate" class="form-label">Date</label>
+                        <input asp-for="@Model.InterviewDate" class="form-control shadow-none" type="date" id="inputDate" min="@DateTime.UtcNow.Date.ToString("yyyy-MM-dd")" value="" onchange="validateScheduling()">
+                        <span asp-validation-for="InterviewDate" class="text-danger"></span>
+                    </div>
+                    <div class="p-3 mb-3">
+                        <label for="inputStart" class="form-label">Start Time</label>
+                        <input asp-for="@Model.StartTime" class="form-control shadow-none" type="time" id="inputStart" onchange="validateScheduling()">
+                        <span asp-validation-for="StartTime" class="text-danger"></span>
+                    </div>
+                    <div class="p-3 mb-3">
+                        <label for="inputEnd" class="form-label">End Time</label>
+                        <input asp-for="@Model.EndTime" class="form-control shadow-none" type="time" id="inputEnd" onchange="validateScheduling()">
+                        <span asp-validation-for="EndTime" class="text-danger"></span>
+                    </div>
+                    <div class="p-3 mb-3">
+                        <label for="inputLocation" class="form-label">Location</label>
+                        <input asp-for="@Model.Location" class="form-control shadow-none" type="text" id="inputLocation">
+                        <span asp-validation-for="Location" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="reset" class="btn btn-secondary shadow-none" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary shadow-none">Schedule</button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>
+
+<partial name="_ValidationScriptsPartial" />
+
+<script>
+
+    var today = new Date();
+
+    function validateScheduling() {
+        event.preventDefault();
+
+        $('#inputStart').removeAttr('min');
+
+        var selecteddate = new Date($('#inputDate').val());
+
+        if (selecteddate.toDateString() == today.toDateString()) {
+            var hours = today.getHours();
+            var minutes = today.getMinutes();
+
+            hours = (hours < 10 ? '0' : '') + hours;
+            minutes = (minutes < 10 ? '0' : '') + minutes;
+
+            var formattedTime = hours + ':' + minutes;
+
+            $('#inputStart').attr('min', formattedTime);
+
+        }
+
+        var startTime = $('#inputStart').val();
+        var endTimeInput = $('#inputEnd');
+
+        var startTimeObj = new Date('1970-01-01T' + startTime + ':00');
+
+        startTimeObj.setMinutes(startTimeObj.getMinutes() + 30);
+
+        var adjustedTime = startTimeObj.toTimeString().substring(0, 5);
+
+        endTimeInput.min = adjustedTime;
+
+        if (endTimeInput.val() < adjustedTime) {
+            endTimeInput.val(adjustedTime);
+        }
+
+        return true;
+    }
+
+</script>

@@ -1,0 +1,22 @@
+﻿@{
+    ViewData["Title"] = "Access Denied";
+}
+
+<style>
+    body {
+        height: 100vh !important;
+    }
+</style>
+
+<div class="container h-100 d-flex flex-column justify-content-center align-items-center ">
+    <img src="~/images/wrong-password.png" style="height: 100px" />
+    <h1 class="display-4 text-danger mb-3">Access Denined</h1>
+    <h4 class="text-muted mb-3">You have not access to this Page</h4>
+    <a type="button" class="btn btn-secondary" asp-action="Login" asp-controller="Home">Go To Login</a>
+</div>
+
+<div id="loader-container" class="loader-container" style="z-index:150">
+    <div id="loader" class="loader" style="z-index:150"></div>
+</div>
+
+<div class="backdrop" style="z-index:140"></div>

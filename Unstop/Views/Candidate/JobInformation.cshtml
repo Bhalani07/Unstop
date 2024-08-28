@@ -1,0 +1,240 @@
+﻿@inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpAcc
+@model Unstop.Models.DTO.JobDTO;
+
+@{
+    ViewData["Title"] = "Jobs";
+}
+
+<partial name="_CandidateHeader" />
+
+<div class="container mb-5">
+    <div class="row p-5" style="background-color: #BFDCF9">
+        @* <div class="col-12 ms-sm-4 m-0">
+            <a asp-action="Jobs" asp-controller="Candidate" class="btn border border-1 border-primary rounded-pill shadow-none"><i class="fa-solid fa-chevron-left"></i></a>
+        </div> *@
+        <div class="col-lg-7 col-12 ps-4 ms-md-5 my-5" style="border-left: 5px solid #0d6efd;">
+            <div class="p-2 rounded-2 bg-white d-flex justify-content-center" style="height: 100px; width: 100px;">
+                <img class="d-block w-100" src="https://d8it4huxumps7.cloudfront.net/uploads/images/unstop/svg/unstop-logo.svg" alt="job-photo" />
+            </div>
+            <div>
+                <h1 class="my-3">@Model.Title</h1>
+                <p><i class="fa-solid fa-building"></i> @Model.Company</p>
+                <p><i class="fa-solid fa-location-dot"></i> @Model.Location</p>
+            </div>
+        </div>
+        <div class="col-lg-4 col-12 m-auto">
+            <div class="p-4 rounded-2 bg-white">
+
+                 
+                <div class="row">
+                    <div class="col-8">
+                        <button type="button" onclick="openApplyModal(@Model.JobId)" class="btn btn-primary form-control btn-block shadow-none">
+                            Apply
+                        </button>
+                    </div>
+
+                    <div class="col-4">
+                        @if(Model.IsFavorite == false)
+                        {
+                            <a type="button" class="form-control border border-2 shadow-none d-flex justify-content-center" asp-action="AddToFavorite" asp-route-jobId="@Model.JobId"><i class="fa-regular fa-heart fs-5"></i></a>
+                        }
+                        else
+                        {
+                            <a type="button" class="form-control border border-2 shadow-none d-flex justify-content-center" asp-action="RemoveFromFavorite" asp-route-jobId="@Model.JobId"><i class="fa-solid fa-heart fs-5"></i></a>
+                        }
+                    </div>
+                </div>
+
+                <div class="row mt-3">
+                    <div class="col-2 d-flex justify-content-center align-items-center">
+                        <i class="fa-regular fa-calendar fs-5"></i>
+                    </div>
+                    <div class="col-auto">
+                        <small>Application Deadline</small>
+                        <h6>@Model.LastDate?.ToString("dd MMM, yyyy")</h6>
+                    </div>
+                </div>
+                @if (Model.Occupancy != 0)
+                {
+                    <div class="row mt-3">
+                        <div class="col-2 d-flex justify-content-center align-items-center">
+                            <i class="fa-solid fa-user-group fs-5"></i>
+                        </div>
+                        <div class="col-auto">
+                            <small>No. of Openings</small>
+                            <h6>@Model.Occupancy</h6>
+                        </div>
+                    </div>
+                }
+
+            </div>
+        </div>
+    </div>
+
+    <div class="mt-5 ms-md-5 p-md-5 p-2">
+        <div class="ps-2 m-2" style="border-left: 4px solid #0d6efd;">
+            <h4 class="fw-bold">Details</h4>
+        </div>
+        <div class="ps-2 m-2">
+            <p>@Model.Description</p>
+        </div>
+
+        @if (Model.Responsibilities != null)
+        {
+            <div class="ps-3 m-2 mt-4">
+                <h5 class="fw-bold">Responsibilities of the Candidate : </h5>
+
+                @{
+                    string[] responsibilites = Model.Responsibilities.Split("<new>");
+                }
+
+                <div class="ps-2 m-2 mt-4">
+                    <ul>
+                        @foreach (var item in responsibilites)
+                        {
+                            <li style="color: #0d6efd" class="fs-5"><small class="text-black">@item</small></li>
+                        }
+                    </ul>
+                </div>
+            </div>
+        }
+
+        @if (Model.Requirements != null)
+        {
+            <div class="ps-3 m-2 my-4">
+                <h5 class="fw-bold">Requirements : </h5>
+
+                @{
+                    string[] requirements = Model.Requirements.Split("<new>");
+                }
+
+                <div class="ps-2 m-2 mt-4">
+                    <ul>
+                        @foreach (var item in requirements)
+                        {
+                            <li style="color: #0d6efd" class="fs-5"><small class="text-black">@item</small></li>
+                        }
+                    </ul>
+                </div>
+            </div>
+        }
+
+        <div class="ps-2 m-2 mt-5" style="border-left: 4px solid #0d6efd;">
+            <h4 class="fw-bold">Additional Information</h4>
+        </div>
+        <div class="ps-3 m-2 mt-4 row">
+            <div class="col-lg-6 col-12 my-4">
+                <div class="row">
+                    <div class="col-8">
+                        <h5 class="mb-2">Job Location(s)</h5>
+                        @if (Model.Location != null)
+                        {
+                            <p>@Model.Location</p>
+                        }
+                        else
+                        {
+                            <p>Not Disclosed</p>
+                        }
+                    </div>
+                    <div class="col-4">
+                        <img src="https://d8it4huxumps7.cloudfront.net/uploads/images/unstop/stipend/location.svg" alt="additional" />
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6 col-12 my-4">
+                <div class="row">
+                    <div class="col-8">
+                        <h5 class="mb-2">Experience</h5>
+                        @if (Model.MinExperience != 0 || Model.MaxExperience != 0)
+                        {
+                            <p>
+                                @Model.MinExperience year
+                                @if (Model.MaxExperience != 0)
+                                {
+                                    <span>- @Model.MaxExperience year</span>
+                                }
+                            </p>
+                        }
+                        else
+                        {
+                            <p>Not Required</p>
+                        }
+                    </div>
+                    <div class="col-4">
+                        <img src="https://d8it4huxumps7.cloudfront.net/uploads/images/unstop/stipend/experience.svg" alt="additional" />
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6 col-12 my-4">
+                <div class="row">
+                    <div class="col-8">
+                        <h5 class="mb-2">Salary</h5>
+                        @if (Model.MinSalary != null || Model.MaxSalary != null)
+                        {
+                            <p>
+                                ₹ @Model.MinSalary /year
+                                @if (Model.MaxSalary != null)
+                                {
+                                    <span>- ₹ @Model.MaxSalary /year</span>
+                                }
+                            </p>
+                        }
+                        else
+                        {
+                            <p>Not Disclosed</p>
+                        }
+                    </div>
+                    <div class="col-4">
+                        <img src="https://d8it4huxumps7.cloudfront.net/uploads/images/unstop/stipend/salary.svg" alt="additional" />
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6 col-12 my-4">
+                <div class="row">
+                    <div class="col-8">
+                        <h5 class="mb-2">Work Details</h5>
+                        <p>Working Days: @Model.WorkingDays</p>
+                    </div>
+                    <div class="col-4">
+                        <img src="https://d8it4huxumps7.cloudfront.net/uploads/images/unstop/stipend/work-detail.svg" alt="additional" />
+                    </div>
+                </div>
+            </div>
+
+            @if (Model.JobType != null || Model.JobTiming != null)
+            {
+                <div class="col-lg-6 col-12 my-4">
+                    <div class="row">
+                        <div class="col-8">
+                            <h5 class="mb-2">Job Type / Timing</h5>
+                            @if (Model.JobType != null)
+                            {
+                                <p>Job Type: @Model.JobType</p>
+                            }
+                            @if (Model.JobTiming != null)
+                            {
+                                <p>Job Timing: @Model.JobTiming</p>
+                            }
+                        </div>
+                        <div class="col-4">
+                            <img src="https://d8it4huxumps7.cloudfront.net/uploads/images/unstop/stipend/job-timing.svg" alt="additional" />
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+<partial name="_Footer" />
+
+<div id="applicationModalContainer"></div>
+
+@section Scripts{
+    <script>
+        const navLinks = document.querySelectorAll('.nav-link');
+        const currentNav = document.getElementById('nav-home');
+        navLinks.forEach(nav => nav.classList.remove('active'));
+        currentNav.classList.add('active');
+    </script>
+}

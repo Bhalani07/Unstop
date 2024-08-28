@@ -1,0 +1,221 @@
+﻿@using Newtonsoft.Json;
+@model Unstop.Models.VM.ApplicationsVM;
+
+@{
+    string prevUrl = Url.Action("Applications", "Candidate", new { status = ViewBag.Status.ToArray(), pageNumber = (Model.Pagination.PageNumber - 1), pageSize = Model.Pagination.PageSize, sortOrder = ViewBag.SortOrder, search = ViewBag.Search });
+    string nextUrl = Url.Action("Applications", "Candidate", new { status = ViewBag.Status.ToArray(), pageNumber = (Model.Pagination.PageNumber + 1), pageSize = Model.Pagination.PageSize, sortOrder = ViewBag.SortOrder, search = ViewBag.Search });
+
+    string asc = @ViewBag.SortOrder == "asc" ? "active" : "";
+    string desc = @ViewBag.SortOrder == "desc" ? "active" : "";
+    string applied = "", reviewed = "", scheduled = "", interviewed = "", offered = "", accepted = "", declined = "", rejected = "", withdrawn = "";
+    if (ViewBag.Status != null)
+    {
+        applied = @ViewBag.Status.Contains("Applied") ? "checked" : "";
+        reviewed = @ViewBag.Status.Contains("Reviewed") ? "checked" : "";
+        scheduled = @ViewBag.Status.Contains("Interview Scheduled") ? "checked" : "";
+        interviewed = @ViewBag.Status.Contains("Interviewed") ? "checked" : "";
+        offered = @ViewBag.Status.Contains("Job Offered") ? "checked" : "";
+        accepted = @ViewBag.Status.Contains("Accepted") ? "checked" : "";
+        declined = @ViewBag.Status.Contains("Declined") ? "checked" : "";
+        rejected = @ViewBag.Status.Contains("Rejected") ? "checked" : "";
+        withdrawn = @ViewBag.Status.Contains("Withdrawn") ? "checked" : "";
+    }
+}
+
+<div class="container mb-5 pb-5">
+    <div class="row m-2">
+        <div class="col-md-3 col-12 my-2">
+            <input type="text" class="rounded-pill border border-2 py-2 ps-3 w-100" placeholder="Search..." value="@ViewBag.Search" id="applicationSearchInput" onkeyup='seachApplication(this.value, "@ViewBag.SortOrder", @Html.Raw(JsonConvert.SerializeObject(ViewBag.Status ?? new List<string>())), false, "@ViewBag.PageSize" )'>
+        </div>
+        <div class="col-md-9 col-12 d-flex justify-content-end gap-3 my-2">
+            <div class="btn-group">
+                <button class="btn dropdown-toggle rounded-pill py-2 px-3 shadow-none border border-2" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    Sort
+                </button>
+                <ul class="dropdown-menu dropdown-menu-md-end">
+                    <li>
+                        <button type="button" class="dropdown-item @desc" onclick='seachApplication("@ViewBag.Search", "desc", @Html.Raw(JsonConvert.SerializeObject(ViewBag.Status ?? new List<string>())), false, "@ViewBag.PageSize")'>
+                            Applied Date ( Latest First )
+                        </button>
+                    </li>
+                    <li>
+                        <button type="button" class="dropdown-item @asc" onclick='seachApplication("@ViewBag.Search", "asc", @Html.Raw(JsonConvert.SerializeObject(ViewBag.Status ?? new List<string>())), false, "@ViewBag.PageSize")'>
+                            Applied Date ( Oldest First )
+                        </button>
+                    </li>
+                </ul>
+            </div>
+
+            <button type="button" class="btn btn-primary rounded-pill py-2 px-3 shadow-none" data-bs-toggle="modal" data-bs-target="#applicationFilterModal"><i class="fa-solid fa-filter"></i> Filters</button>
+        </div>
+    </div>
+
+    @if (Model.Applications != null)
+    {
+        @if (@Model.Applications.Count() != 0)
+        {
+            <div class="row">
+                @foreach (var application in Model.Applications)
+                {
+                    <div class="col-12">
+                        <div class="row border border-1 rounded-2 m-2 p-1">
+                            <div class="col-sm-2 col-4 d-flex justify-content-center align-items-center">
+                                <img class="d-block w-50" src="https://d8it4huxumps7.cloudfront.net/uploads/images/unstop/svg/unstop-logo.svg" alt="job-photo" />
+                            </div>
+                            <div class="col-sm-8 col-6">
+                                <h3>@application.Job.Title</h3>
+                                <p><i class="fa-solid fa-building"></i> @application.Job.Company</p>
+                                <p><i class="fa-solid fa-location-dot"></i> @application.Job.Location</p>
+                                <p><i class="fa-solid fa-calendar"></i> @application.AppliedDate.ToString("dd MMM, yyyy")</p>
+                            </div>
+
+                            <div class="col-sm-2 col-12 d-sm-flex flex-column d-none justify-content-center align-items-center">
+                                <div class="fs-5 fw-bold">Status : </div>
+                                <button class="btn btn-success shadow-none">@application.Status</button>
+                            </div>
+
+                            <div class="col-12 d-sm-none d-block my-2">
+                                <div class="row">
+                                    <div class="col-sm-2 col-4 d-flex justify-content-center fw-bold fs-5">
+                                        Status:
+                                    </div>
+                                    <div class="col-auto">
+                                        <button class="btn btn-success shadow-none">@application.Status</button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-12">
+                                <div class="row">
+                                    <div class="col-sm-2 col-4 d-flex justify-content-center fw-bold fs-5">
+                                        Actions:
+                                    </div>
+                                    <div class="col-auto">
+                                        <a class="btn btn-primary shadow-none" asp-action="JobInformation" asp-controller="Candidate" asp-route-jobId="@application.Job.JobId">
+                                            <i class="fa-solid fa-eye d-sm-none d-block"></i>
+                                            <span class="d-none d-sm-block">View</span>
+                                        </a>
+                                        @if (application.Status != "Withdrawn" && application.Status != "Rejected" && application.Status != "Accepted" && application.Status != "Job Offered" && application.Status != "Declined")
+                                        {
+                                            <button class="btn btn-danger shadow-none" type="button" onclick="openWithdrawConfirmation(@application.ApplicationId)">
+                                                <i class="fa-solid fa-trash d-sm-none d-block"></i>
+                                                <span class="d-none d-sm-block">Withdraw</span>
+                                            </button>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                }
+            </div>
+
+            <div class="row mt-5 mb-5">
+                <div class="col-12 d-flex flex-column justify-content-center align-items-center">
+                    <p class="mb-3">
+                        Page @Model.Pagination.PageNumber Out of @Model.Pagination.TotalPages
+                    </p>
+                    <ul class="pagination">
+                        <li class="page-item @(Model.Pagination.PageNumber == 1 ? "disabled" : "")">
+                            <a class="page-link shadow-none" href="@prevUrl">Previous</a>
+                        </li>
+                        @for (int i = 1; i <= Model.Pagination.TotalPages; i++)
+                        {
+                            <li class="page-item @(Model.Pagination.PageNumber == i ? "active" : "")">
+                                <a class="page-link shadow-none" href="@Url.Action("Applications", "Candidate" , new { status=ViewBag.Status.ToArray(), pageNumber=i, pageSize=Model.Pagination.PageSize, sortOrder=ViewBag.SortOrder, search = ViewBag.Search })">@i</a>
+                            </li>
+                        }
+                        <li class="page-item @(Model.Pagination.PageNumber == Model.Pagination.TotalPages ? "disabled" : "")">
+                            <a class="page-link shadow-none" href="@nextUrl">Next</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        }
+        else
+        {
+            <div class="d-flex flex-column justify-content-center align-items-center mt-5 pt-5">
+                <div class="mt-5 pt-5">
+                    <img src="https://d8it4huxumps7.cloudfront.net/uploads/images/64dc4c904c175_no_search_result.png" style="height: 200px">
+                </div>
+                <h4 class="text-center">No Applications Found </h4>
+            </div>
+        }
+    }
+    else
+    {
+        <div class="d-flex flex-column justify-content-center align-items-center mt-5 pt-5">
+            <div class="mt-5 pt-5">
+                <img src="https://d8it4huxumps7.cloudfront.net/uploads/images/64dc4c904c175_no_search_result.png" style="height: 200px">
+            </div>
+            <h4 class="text-center">No Applications Found </h4>
+        </div>
+    }
+
+</div>
+
+
+<div class="modal fade" id="applicationFilterModal" tabindex="-1" aria-labelledby="filterModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered p-5">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="filterModalLabel">Application Filter</h1>
+                <button type="button" class="btn-close shadow-none" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form onsubmit="filterApplication(@ViewBag.PageSize)" id="applicationFilterForm">
+                <input type="hidden" name="search" value=@ViewBag.Search />
+                <input type="hidden" name="sortOrder" value=@ViewBag.SortOrder />
+
+                <div class="modal-body">
+                    <div class="mb-3 row">
+                        <label for="inputStatus" class="col-sm-4 col-form-label fw-bold">Application Status</label>
+                        <div class="col-sm-8 d-flex flex-wrap">
+                            <div class="form-check form-check-inline m-1 w-100">
+                                <input name="status" class="form-check-input shadow-none" type="checkbox" id="inlineStatus1" value="Applied" @applied>
+                                <label class="form-check-label" for="inlineStatus1">Applied</label>
+                            </div>
+                            <div class="form-check form-check-inline m-1 w-100">
+                                <input name="status" class="form-check-input shadow-none" type="checkbox" id="inlineStatus2" value="Reviewed" @reviewed>
+                                <label class="form-check-label" for="inlineStatus2">Reviewed</label>
+                            </div>
+                            <div class="form-check form-check-inline m-1 w-100">
+                                <input name="status" class="form-check-input shadow-none" type="checkbox" id="inlineStatus3" value="Interview Scheduled" @scheduled>
+                                <label class="form-check-label" for="inlineStatus3">Interview Scheduled</label>
+                            </div>
+                            <div class="form-check form-check-inline m-1 w-100">
+                                <input name="status" class="form-check-input shadow-none" type="checkbox" id="inlineStatus4" value="Interviewed" @interviewed>
+                                <label class="form-check-label" for="inlineStatus4">Interviewed</label>
+                            </div>
+                            <div class="form-check form-check-inline m-1 w-100">
+                                <input name="status" class="form-check-input shadow-none" type="checkbox" id="inlineStatus5" value="Job Offered" @offered>
+                                <label class="form-check-label" for="inlineStatus5">Job Offered</label>
+                            </div>
+                            <div class="form-check form-check-inline m-1 w-100">
+                                <input name="status" class="form-check-input shadow-none" type="checkbox" id="inlineStatus6" value="Accepted" @accepted>
+                                <label class="form-check-label" for="inlineStatus6">Accepted</label>
+                            </div>
+                            <div class="form-check form-check-inline m-1 w-100">
+                                <input name="status" class="form-check-input shadow-none" type="checkbox" id="inlineStatus7" value="Declined" @declined>
+                                <label class="form-check-label" for="inlineStatus7">Declined</label>
+                            </div>
+                            <div class="form-check form-check-inline m-1 w-100">
+                                <input name="status" class="form-check-input shadow-none" type="checkbox" id="inlineStatus8" value="Rejected" @rejected>
+                                <label class="form-check-label" for="inlineStatus8">Rejected</label>
+                            </div>
+                            <div class="form-check form-check-inline m-1 w-100">
+                                <input name="status" class="form-check-input shadow-none" type="checkbox" id="inlineStatus9" value="Withdrawn" @withdrawn>
+                                <label class="form-check-label" for="inlineStatus9">Withdrawn</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" onclick='seachApplication("@ViewBag.Search", "@ViewBag.SortOrder", @Html.Raw(JsonConvert.SerializeObject(ViewBag.Status ?? new List<string>())), true , "@ViewBag.PageSize")' class="btn border border-2 shadow-none" data-bs-dismiss="modal">Clear</button>
+                    <button type="reset" class="btn btn-secondary shadow-none">Reset</button>
+                    <button type="submit" class="btn btn-primary shadow-none">Apply</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

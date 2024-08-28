@@ -1,0 +1,22 @@
+﻿@model Unstop.Models.VM.FavoritesVM;
+
+@{
+    ViewData["Title"] = "Favorite Jobs";
+}
+
+<partial name="_CandidateHeader" />
+
+<div id="favoriteJobsContainer">
+    <partial name="_FavoriteJobsList" />
+</div>
+
+<partial name="_Footer" />
+
+@section Scripts{
+    <script>
+        const navLinks = document.querySelectorAll('.nav-link');
+        const currentNav = document.getElementById('nav-favorite');
+        navLinks.forEach(nav => nav.classList.remove('active'));
+        currentNav.classList.add('active');
+    </script>
+}

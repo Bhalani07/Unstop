@@ -1,0 +1,299 @@
+﻿@model Unstop.Models.VM.QRCodeVM;
+
+@{
+    ViewData["Title"] = "QR";
+}
+
+<partial name="_Header" />
+
+<div class="container d-flex justify-content-center">
+    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#generateQRModal">
+        Generate QR
+    </button>
+</div>
+
+<div class="modal fade" id="generateQRModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form method="post" action="GenerateQR">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="inputQRDatasource" class="form-label">Select Datasource</label>
+                        <select class="form-select" id="inputQRDatasourceField" name="QrDataSource" onchange="setDataSource(this.value)">
+                            <option value="Candidate" selected>Candidates</option>
+                            <option value="Job">Jobs</option>
+                        </select>
+                    </div>
+                    <div class="mb-3 candidateSource">
+                        <label for="inputDatasourceField" class="form-label">Select Field</label>
+                        <select class="form-select" id="inputDatasourceField" name="QrDataSourceField">
+                            @foreach (var item in Model.Candidate.GetType().GetProperties())
+                            {
+                                <option value="@item.Name">@item.Name</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="mb-3 jobSource" style="display: none;">
+                        <label for="inputDatasourceField1" class="form-label">Select Field</label>
+                        <select class="form-select" id="inputDatasourceField1" name="QrDataSourceField1">
+                            @foreach (var item in Model.Job.GetType().GetProperties())
+                            {
+                                <option value="@item.Name">@item.Name</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="mb-3 jobSource" style="display: none;">
+                        <div>
+                            <label for="inputDatasourceField1" class="form-label">Job IDs</label>
+                        </div>
+                        @foreach (var item in Model.Jobs)
+                        {
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="checkbox" id="inlineCheckbox{@item.JobId}" value="@item.JobId" name="SelectedJobs">
+                                <label class="form-check-label" for="inlineCheckbox{@item.JobId}">@item.JobId</label>
+                            </div>
+                        }
+                    </div>
+                    <div class="mb-3 candidateSource">
+                        <div>
+                            <label for="inputDatasourceField1" class="form-label">Candidate IDs</label>
+                        </div>
+                        @foreach (var item in Model.Candidates)
+                        {
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="checkbox" id="inlineCheckbox{@item.CandidateId}" value="@item.UserId" name="SelectedCandidates">
+                                <label class="form-check-label" for="inlineCheckbox{@item.CandidateId}">@item.CandidateId</label>
+                            </div>
+                        }
+                    </div>
+                    <div class="mb-3">
+                        <label for="inputTemplate" class="form-label">Select Template</label>
+                        <select class="form-select" id="inputTemplate" name="QrTemplate">
+                            @foreach (var item in Model.Templates)
+                            {
+                                <option value="@item.TemplateId">@item.TemplateId</option>
+                            }
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="previewTemplate()">View Template</button>
+                    <button type="submit" class="btn btn-primary">Generate QR</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="templateModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="p-3 d-flex justify-content-center">
+                <div class="m-2 border border-1" style="height: 400px; width: 700px; background-color: lightgray; position: relative" id="templateDiv">
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container-fluid d-flex justify-content-center align-items-center gap-3 mb-5">
+    <div class="m-2 p-2 w-25 border border-1">
+        <form action="SaveTemplate" method="post">
+            <input type="hidden" id="elementsData" name="elementsData" />
+            <input type="hidden" id="inpField" name="inpField" />
+
+            <div class="mb-3">
+                <label for="inputDatasource" class="form-label">Select Datasource</label>
+                <select class="form-select" id="inputDatasource" name="dataSource" onchange="setDataSource(this.value)">
+                    <option value="Candidate" selected>Candidates</option>
+                    <option value="Job">Jobs</option>
+                </select>
+            </div>
+            <div class="mb-3">
+                <label for="inputErrorLevel" class="form-label">Error Correction Level</label>
+                <select class="form-select" id="inputErrorLevel" name="correctionLevel">
+                    <option selected value="0">Low</option>
+                    <option value="1">Medium</option>
+                    <option value="2">High</option>
+                    <option value="3">Highest</option>
+                </select>
+            </div>
+            <div class="mb-3">
+                <label for="inputMargin" class="form-label">Margins</label>
+                <input type="number" class="form-control" id="inputMargin" name="inputMargins">
+            </div>
+            <div class="mb-3" id="colorDiv">
+                <label for="colorGradient">Choose a color</label>
+                @(
+                    Html.Kendo().ColorGradient()
+                    .Name("colorGradient")
+                    .Value("#000000")
+                    .Format(ColorGradientFormat.Rgb)
+                    .Formats(new string[] { "rgb", "hex" })
+                    )
+            </div>
+            <button type="submit" class="btn btn-primary">Create Template</button>
+        </form>
+
+    </div>
+    <div class="m-2 p-2 w-50 border border-1 d-flex flex-column justify-content-center align-items-center gap-3">
+        <div class="m-2 p-2 border border-1 d-flex justify-content-center gap-3">
+            <div id="dragabbleImg1" class="draggableDiv" style="height: 50px; width: 50px;">
+                <img src="~/QRs/radhe.png" class="w-100 h-100" />
+            </div>
+            <div id="dragabbleImg2" class="draggableDiv" style="height: 50px; width: 50px;">
+                <img src="~/images/user.png" class="w-100 h-100" />
+            </div>
+            <div class="mb-3 candidateSource draggableDiv" id="dragabbleImg3" style="height: 50px; width: 160px;">
+                <select class="form-select" onchange="setInpField(this.value)">
+                    @foreach (var item in Model.Candidate.GetType().GetProperties())
+                    {
+                        <option value="@item.Name">@item.Name</option>
+                    }
+                </select>
+            </div>
+            <div class="mb-3 jobSource draggableDiv" id="dragabbleImg4" style="display: none; height: 50px; width: 160px;">
+                <select class="form-select" onchange="setInpField(this.value)">
+                    @foreach (var item in Model.Job.GetType().GetProperties())
+                    {
+                        <option value="@item.Name">@item.Name</option>
+                    }
+                </select>
+            </div>
+        </div>
+        <div class="m-2 border border-1" style="height: 400px; width: 700px; background-color: lightgray; position: relative" id="editorDiv"></div>
+    </div>
+</div>
+
+<partial name="_Footer" />
+
+<script>
+    function setDataSource(dataSource) {
+        if (dataSource == "Candidate") {
+            $(".jobSource").css("display", "none");
+            $(".candidateSource").css("display", "block");
+        }
+        else if (dataSource == "Job") {
+            $(".candidateSource").css("display", "none");
+            $(".jobSource").css("display", "block");
+        }
+    }
+
+    function setInpField(input) {
+        $('#inpField').val(input)
+    }
+
+    function previewTemplate() {
+        var templateId = $('#inputTemplate').val();
+
+        $.ajax({
+            url: "/Company/PreviewTemplate",
+            method: "GET",
+            data: { templateId: templateId },
+
+            success: function (result) {
+                $('#templateDiv').html(result);
+                $('#templateModal').modal('show');
+            },
+
+            error: function () {
+
+            }
+        });
+    }
+</script>
+
+@section Scripts{
+    <script>
+        const navLinks = document.querySelectorAll('.nav-link');
+        const currentNav = document.getElementById('nav-qr');
+        navLinks.forEach(nav => nav.classList.remove('active'));
+        currentNav.classList.add('active');
+
+        $(document).ready(function () {
+            $("#dragabbleImg1").draggable({
+                revert: "invalid",
+                helper: "clone",
+            });
+            $("#dragabbleImg2").draggable({
+                revert: "invalid",
+                helper: "clone",
+            });
+            $("#dragabbleImg3").draggable({
+                revert: "invalid",
+                helper: "clone",
+            });
+            $("#dragabbleImg4").draggable({
+                revert: "invalid",
+                helper: "clone",
+            });
+
+            $("#editorDiv").droppable({
+                accept: "#dragabbleImg1, #dragabbleImg2, #dragabbleImg3, #dragabbleImg4",
+                drop: function (event, ui) {
+                    var $original = ui.helper;
+                    var $original2 = ui.draggable;
+                    var $clone = $original.clone();
+
+                    $clone.removeClass("ui-draggable-dragging");
+
+                    if ($original2.attr('id') === 'dragabbleImg1') {
+                        $clone.attr('id', 'clonedImg1');
+                    }
+                    else if ($original2.attr('id') === 'dragabbleImg2') {
+                        $clone.attr('id', 'clonedImg2');
+                    }
+                    else if ($original2.attr('id') === 'dragabbleImg3') {
+                        $clone.attr('id', 'clonedImg3');
+                    }
+                    else if ($original2.attr('id') === 'dragabbleImg4') {
+                        $clone.attr('id', 'clonedImg3');
+                    }
+
+                    $clone.draggable({
+                        containment: "#editorDiv",
+                        stop: function () {
+                            updateElementsData();
+                        }
+                    }).resizable({
+                        resize: function () {
+                            updateElementsData();
+                        }
+                    });
+
+                    $(this).append($clone.css({
+                        position: "absolute",
+                        left: ui.position.left - $(this).offset().left,
+                        top: ui.position.top - $(this).offset().top
+                    }));
+
+                    updateElementsData();
+                }
+            });
+
+            function updateElementsData() {
+                var elementsData = [];
+                $("#editorDiv .draggableDiv").each(function () {
+                    var $el = $(this);
+                    elementsData.push({
+                        name: $el.attr('id'),
+                        left: parseInt($el.css('left')),
+                        top: parseInt($el.css('top')),
+                        width: parseInt($el.css('width')),
+                        height: parseInt($el.css('height'))
+                    });
+                });
+                $("#elementsData").val(JSON.stringify(elementsData));
+
+                console.log(elementsData);
+            }
+        });
+    </script>
+}
